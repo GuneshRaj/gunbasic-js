@@ -1,0 +1,13 @@
+#GunBasic-JS - Auto Ajax Library
+
+= Introduction =
+
+Gun Basic-JS is a Simple, Ad hoc library for Web Developers that dont want to create fat html clients.
+
+It works by allowing Ajax responses to be self descriptive allowing it to update to which DIV or Evaluating any Javascript codes.
+
+It is extremely simple to use, very small code base.
+
+Targets web developers that are not inclined to code too much on Javascript.
+
+It is free from any Javascript Libraries, Stand alone. 
