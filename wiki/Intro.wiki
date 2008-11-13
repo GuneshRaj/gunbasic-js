@@ -1,4 +1,4 @@
-#GunBasic JS - Auto Ajax Library
+=GunBasic JS - Auto Ajax Library=
 
 = Introduction =
 
