@@ -9,7 +9,7 @@ It is free from any Javascript Libraries, Stand alone.
 Example
 
 To make a GunBasic Call
-```
+```js
 autoajaxcall (null, 'GET', 'js.html', 'exampleparam=123', showworking, hideworking);
 ```
 
@@ -23,7 +23,7 @@ Function OnComplete, Optional
 
 The output from js.html would be:
 
-```
+```html
 <!-- [SGUN:] -->
 div1example2|div2example2|
 <!-- [EGUN:] -->
