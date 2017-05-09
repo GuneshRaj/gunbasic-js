@@ -1,0 +1,44 @@
+<!-- [SGUN:] -->
+div1example2|div2example2|div1|
+<!-- [EGUN:] -->
+<!-- [SVAL:] -->
+TITLE|HEY|
+<!-- [EVAL:] -->
+
+<!-- [SGUN:div1example2] -->
+For the first <b>Example</b><br />
+This is for the first DIV<br />
+Changed for Example 2
+<!-- [EGUN:div1example2] -->
+
+<!-- [SGUN:div2example2] -->
+For the First <b>Example</b><br />
+This is for the Second DIV<br />
+Changed for Example 2
+<!-- [EGUN:div2example2] -->
+
+<!-- [SGUN:div1] -->
+DIV ELEMENT CREATED, CONTENT AMMENDED IN THE SAME CALL.
+<!-- [EGUN:div1] -->
+
+
+<!-- [SVAL:TITLE] -->
+document.title="New Title, changed for Example 2"
+
+var div = document.createElement("div");
+div.setAttribute("id", "div1");
+div.style.width = "100%";
+div.style.height = "20px";
+div.style.background = "red";
+div.style.color = "white";
+div.innerHTML = "EMPTY RED DIV CREATED";
+document.body.appendChild(div);
+
+<!-- [EVAL:TITLE] -->
+
+<!-- [SVAL:HEY] -->
+<!-- alert('As Expected, GunBasic sends this Alert via Ajax, One Line of Code, Check Page Title!'); -->
+<!-- [EVAL:HEY] -->
+
+
+

@@ -1,0 +1,202 @@
+<!--
+	@Project:	GunBasic-JS
+	@Website:	http://code.google.com/p/gunbasic-js/
+	@Author: 	Gunesh Raj
+	@Email: 	gunesh.raj@gmail.com
+	@Version: 	0.2
+	@License: 	GNU General Public License v2
+	@Notes: 	The Author reserves the right to change the Licence.
+				Please Send me bugs & Notices via http://code.google.com/p/gunbasic-js/
+-->
+
+<html>
+<head>
+<title>GunBasic-JS Example Page</title>
+<script src="gunbasic.js"></script>
+<script>
+
+function showworking() {
+	var dx = document.getElementById('divworking');
+	var vis = dx.style;
+	vis.display = 'block';
+	//console.log('SHOW...');
+	//alert('Working');
+}
+
+function hideworking() {
+	var dx = document.getElementById('divworking');
+	var vis = dx.style;
+	vis.display = 'none';
+	//console.log('HIDE...');
+}
+
+
+
+</script>
+</head>
+<body style="font-family:Geneva, Arial, Helvetica, sans-serif">
+
+<div id="divworking" style="background-color:#FF6600; width: 100px; height: 25px; position:absolute; z-index: 100; left: 300px; color:#FFFFFF; top: 0px; text-align:center; display: none">
+Working...
+</div>
+
+
+<h1>GunBasic-JS Example Page</h1>
+<p>
+Version 0.5<br>
+Gunesh Raj<br>
+<a href="http://code.google.com/p/gunbasic-js/">http://code.google.com/p/gunbasic-js/</a><br>
+</p>
+
+<br>
+Working Box: <a href="#" onClick="showworking()">Show</a> | <a href="#" onClick="hideworking()">Hide</a>
+<br>
+For this update, the AutoAjax Call would call a Function on Starting & Call another Function on Ended. I have added the Javascript Alert because localhost calls are very fast, you cant see the Working Orange Box.
+<br>
+
+
+<h2>Example 1: DIV alone via Ajax</h2>
+<p>
+In this example, GunBasic-JS would be used to populate these DIV's (div1example1 and div2example1) with Ajax Data, which would be any HTML content.
+We would only call this function once.
+<br /><br />
+<a href="#" onClick="autoajaxcall (null, 'POST', 'ajax.html?a=1&b=2', 'data={&quot;name&quot;: &quot;test&quot;}', showworking, hideworking);">Run Example 1</a>
+</p>
+Div1
+<div id="div1example1" style="width: 400px; height: 70px; background:#99CCFF; border-color:#FF9933; padding: 10px"></div>
+
+Div2
+<div id="div2example1" style="width: 400px; height: 70px; background:#99CCFF; border-color:#FF9933; padding: 10px"></div>
+
+<p>
+Note that both Div boxes are filled with 1 call to the the server.
+Normal Ajax calls rely on parsing the results and assigning the values to each DIV.
+In this Case. this is done Automatically for you.
+</p>
+
+<h3>Source Code : Client</h3>
+
+<pre style="background:#EFEFEF; border-color:#FF9933; padding: 10px">
+To make a GunBasic Call:
+
+<script src="gunbasic.js"></script>
+autoajaxcall (null, 'GET', 'ajax.html', 'exampleparam=123', showworking, hideworking);
+
+Params:
+1. Just Ignore for now, use null.
+2. HTTP Method, [GET|POST]
+3. URL of the Ajax Call
+4. Parameters for the Ajax Call
+5. Function OnStart (Optional)
+6. Function OnComplete (Optional)
+
+</pre>
+
+<h3>Source Code : Server [ajax.html]</h3>
+
+<pre style="background:#EFEFEF; border-color:#FF9933; padding: 10px">
+
+&lt;!-- [SGUN:] --&gt;
+div1example1|div2example1|
+&lt;!-- [EGUN:] --&gt;
+
+&lt;!-- [SGUN:div1example1] --&gt;
+For the first &lt;b&gt;Example&lt;/b&gt;&lt;br /&gt;
+This is for the first DIV
+&lt;!-- [EGUN:div1example1] --&gt;
+
+&lt;!-- [SGUN:div2example1] --&gt;
+For the First &lt;b&gt;Example&lt;/b&gt;&lt;br /&gt;
+This is for the Second DIV
+&lt;!-- [EGUN:div2example1] --&gt;
+
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Example 2: Adding Javascript Interpreting in the Call</h2>
+<p>
+This example extends the 1st example by adding the ability to run Javascript codes as well as displaying content to DIVS.
+It would display the values in those DIVs and change the Title of this Page with a JS Alert.
+<br /><br />
+<a href="#" onClick="autoajaxcall (null, 'GET', 'js.html', 'exampleparam=123', showworking, hideworking);">Run Example 2</a> (Scroll down for the div after running this example)
+</p>
+Div1
+<div id="div1example2" style="width: 400px; height: 70px; background:#99CCFF; border-color:#FF9933; padding: 10px"></div>
+
+Div2
+<div id="div2example2" style="width: 400px; height: 70px; background:#99CCFF; border-color:#FF9933; padding: 10px"></div>
+
+<p>
+Same effect
+</p>
+
+<h3>Source Code : Client</h3>
+
+<pre style="background:#EFEFEF; border-color:#FF9933; padding: 10px">
+To make a GunBasic Call:
+
+<script src="gunbasic.js"></script>
+autoajaxcall (null, 'GET', 'js.html', 'exampleparam=123', showworking, hideworking);
+
+Params:
+1. Just Ignore for now, use null.
+2. HTTP Method, [GET|POST]
+3. URL of the Ajax Call
+4. Parameters for the Ajax Call
+5. Function OnStart (Optional)
+6. Function OnComplete (Optional)
+
+</pre>
+
+<h3>Source Code : Server [js.html]</h3>
+
+<pre style="background:#EFEFEF; border-color:#FF9933; padding: 10px">
+
+&lt;!-- [SGUN:] --&gt;
+div1example2|div2example2|
+&lt;!-- [EGUN:] --&gt;
+&lt;!-- [SVAL:] --&gt;
+TITLE|HEY|
+&lt;!-- [EVAL:] --&gt;
+
+&lt;!-- [SGUN:div1example2] --&gt;
+For the first &lt;b&gt;Example&lt;/b&gt;&lt;br /&gt;
+This is for the first DIV&lt;br /&gt;
+Changed for Example 2
+&lt;!-- [EGUN:div1example2] --&gt;
+
+&lt;!-- [SGUN:div2example2] --&gt;
+For the First &lt;b&gt;Example&lt;/b&gt;&lt;br /&gt;
+This is for the Second DIV&lt;br /&gt;
+Changed for Example 2
+&lt;!-- [EGUN:div2example2] --&gt;
+
+&lt;!-- [SVAL:TITLE] --&gt;
+document.title="New Title, changed for Example 2"
+&lt;!-- [EVAL:TITLE] --&gt;
+
+&lt;!-- [SVAL:HEY] --&gt;
+alert('As Expected, GunBasic sends this Alert via Ajax, One Line of Code, Check Page Title!');
+&lt;!-- [EVAL:HEY] --&gt;
+
+</pre>
+
+
+
+
+
+
+</body>
+
+
+</html>
