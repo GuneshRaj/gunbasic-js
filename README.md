@@ -1,5 +1,7 @@
 # gunbasic-js
 
+(From https://code.google.com/p/gunbasic-js Around 2008)
+
 Gun Basic-JS is a Simple, Ad hoc library for Web Developers that dont want to create fat html clients.
 It works by allowing Ajax responses to be self descriptive allowing it to update to which DIV or Evaluating any Javascript codes.
 It is extremely simple to use, very small code base.
