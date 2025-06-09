@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GunBasic-JS 3.0 Simple Showcase</title>
+    <script src="gunbasic-v3.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .example-section {
+            border: 1px solid #ddd;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+        
+        .demo-area {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 15px 0;
+            background: white;
+            min-height: 80px;
+        }
+        
+        .code-block {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            padding: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin: 15px 0;
+        }
+        
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #005a87;
+        }
+        
+        .status {
+            background: #ffeb3b;
+            padding: 8px 12px;
+            display: none;
+            font-weight: bold;
+        }
+        
+        h1, h2 {
+            color: #333;
+        }
+        
+        .documentation {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+    <script>
+        function showStatus() {
+            document.getElementById('status').style.display = 'block';
+            document.getElementById('status').textContent = 'Loading...';
+        }
+
+        function hideStatus() {
+            document.getElementById('status').style.display = 'none';
+        }
+
+        function onGetComplete() {
+            hideStatus();
+            console.log('GET request completed');
+        }
+
+        function onPostComplete() {
+            hideStatus();
+            console.log('POST request completed');
+        }
+
+        function reset() {
+            document.getElementById('get-result').innerHTML = '<p>Click "GET Example" button to load content here.</p>';
+            document.getElementById('post-result').innerHTML = '<p>Click "POST Example" button to load content here.</p>';
+            document.getElementById('asp-result').innerHTML = '<p>Click "ASP Example" button to see templating in action.</p>';
+        }
+    </script>
+</head>
+<body>
+    <h1>GunBasic-JS 3.0 Simple Showcase</h1>
+    <p><strong>Version 3.0</strong> - Modern AJAX framework with clean attributes and ASP-style templating</p>
+    
+    <div id="status" class="status">Ready</div>
+    
+    <button onclick="reset()">Reset All Examples</button>
+
+    <!-- Example 1: GET Request -->
+    <div class="example-section">
+        <h2>1. GET Request Example</h2>
+        
+        <div class="documentation">
+            <strong>Feature:</strong> Simple GET request using clean HTML attributes<br>
+            <strong>Attributes:</strong>
+            <ul>
+                <li><code>g-get="url"</code> - URL for GET request</li>
+                <li><code>g-start="function"</code> - Function to call when request starts</li>
+                <li><code>g-complete="function"</code> - Function to call when request completes</li>
+            </ul>
+        </div>
+        
+        <button g-get="get-example.html" 
+                g-start="showStatus" 
+                g-complete="onGetComplete">
+            GET Example
+        </button>
+        
+        <div class="demo-area" id="get-result">
+            <p>Click "GET Example" button to load content here.</p>
+        </div>
+        
+        <div class="code-block">HTML:
+&lt;button g-get="get-example.html" 
+        g-start="showStatus" 
+        g-complete="onGetComplete"&gt;
+    GET Example
+&lt;/button&gt;
+
+Server Response (get-example.html):
+&lt;g-data id="get-result"&gt;
+    &lt;h3&gt;GET Request Success!&lt;/h3&gt;
+    &lt;p&gt;This content was loaded via GET request.&lt;/p&gt;
+    &lt;p&gt;Timestamp: &lt;span id="get-time"&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/g-data&gt;
+
+&lt;g-run&gt;
+    document.getElementById('get-time').textContent = new Date().toLocaleString();
+    console.log('GET response processed');
+&lt;/g-run&gt;</div>
+    </div>
+
+    <!-- Example 2: POST Request -->
+    <div class="example-section">
+        <h2>2. POST Request Example</h2>
+        
+        <div class="documentation">
+            <strong>Feature:</strong> POST request with data parameters<br>
+            <strong>Attributes:</strong>
+            <ul>
+                <li><code>g-post="url"</code> - URL for POST request</li>
+                <li><code>g-args="data"</code> - POST data to send</li>
+                <li><code>g-start="function"</code> - Function to call when request starts</li>
+                <li><code>g-complete="function"</code> - Function to call when request completes</li>
+            </ul>
+        </div>
+        
+        <button g-post="post-example.html" 
+                g-args="username=john&action=login" 
+                g-start="showStatus" 
+                g-complete="onPostComplete">
+            POST Example
+        </button>
+        
+        <div class="demo-area" id="post-result">
+            <p>Click "POST Example" button to load content here.</p>
+        </div>
+        
+        <div class="code-block">HTML:
+&lt;button g-post="post-example.html" 
+        g-args="username=john&amp;action=login" 
+        g-start="showStatus" 
+        g-complete="onPostComplete"&gt;
+    POST Example
+&lt;/button&gt;
+
+Server Response (post-example.html):
+&lt;g-data id="post-result"&gt;
+    &lt;h3&gt;POST Request Success!&lt;/h3&gt;
+    &lt;p&gt;Server received POST data successfully.&lt;/p&gt;
+    &lt;p&gt;This would typically process: username=john&amp;action=login&lt;/p&gt;
+    &lt;div style="border: 1px solid #ddd; padding: 10px; background: #f0f0f0;"&gt;
+        Status: Logged in successfully
+    &lt;/div&gt;
+&lt;/g-data&gt;
+
+&lt;g-run&gt;
+    console.log('POST response processed');
+&lt;/g-run&gt;</div>
+    </div>
+
+    <!-- Example 3: ASP-Style Templating -->
+    <div class="example-section">
+        <h2>3. ASP-Style Templating Example</h2>
+        
+        <div class="documentation">
+            <strong>Feature:</strong> Client-side templating with JavaScript variables, loops, and conditions<br>
+            <strong>ASP Tags:</strong>
+            <ul>
+                <li><code>&lt;% code %&gt;</code> - Execute JavaScript statements (no output)</li>
+                <li><code>&lt;%= expression %&gt;</code> - Output the result of expression</li>
+                <li>Variables, functions, loops, and conditions work just like server-side ASP</li>
+            </ul>
+        </div>
+        
+        <button g-get="asp-example.html" 
+                g-start="showStatus" 
+                g-complete="hideStatus">
+            ASP Templating Example
+        </button>
+        
+        <div class="demo-area" id="asp-result">
+            <p>Click "ASP Example" button to see templating in action.</p>
+        </div>
+        
+        <div class="code-block">HTML:
+&lt;button g-get="asp-example.html" 
+        g-start="showStatus" 
+        g-complete="hideStatus"&gt;
+    ASP Templating Example
+&lt;/button&gt;
+
+Server Response (asp-example.html):
+&lt;g-data id="asp-result"&gt;
+    &lt;%
+        // JavaScript variables and functions
+        var userName = "Alice Smith";
+        var items = ["Apple", "Banana", "Orange"];
+        var prices = [1.20, 0.80, 1.50];
+        var total = 0;
+        
+        function formatPrice(price) {
+            return "$" + price.toFixed(2);
+        }
+        
+        // Calculate total
+        for (var i = 0; i &lt; prices.length; i++) {
+            total += prices[i];
+        }
+        
+        // Calculate shipping threshold
+        var shippingThreshold = 3.00;
+        var amountNeeded = shippingThreshold - total;
+    %&gt;
+    
+    &lt;h3&gt;Welcome &lt;%= userName %&gt;!&lt;/h3&gt;
+    &lt;p&gt;Your shopping cart:&lt;/p&gt;
+    
+    &lt;table border="1" style="border-collapse: collapse; width: 100%;"&gt;
+        &lt;tr&gt;&lt;th&gt;Item&lt;/th&gt;&lt;th&gt;Price&lt;/th&gt;&lt;/tr&gt;
+        &lt;% for (var i = 0; i &lt; items.length; i++) { %&gt;
+            &lt;tr&gt;
+                &lt;td&gt;&lt;%= items[i] %&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;%= formatPrice(prices[i]) %&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;% } %&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;strong&gt;Total&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;&lt;%= formatPrice(total) %&gt;&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;/table&gt;
+    
+    &lt;% if (total &gt;= shippingThreshold) { %&gt;
+        &lt;p style="color: green;"&gt;✓ Free shipping applied!&lt;/p&gt;
+    &lt;% } else { %&gt;
+        &lt;p&gt;Add &lt;%= formatPrice(amountNeeded) %&gt; more for free shipping.&lt;/p&gt;
+    &lt;% } %&gt;
+&lt;/g-data&gt;
+
+&lt;g-run&gt;
+    console.log('ASP templating processed successfully');
+&lt;/g-run&gt;</div>
+    </div>
+
+    <!-- Quick Reference -->
+    <div class="example-section">
+        <h2>Quick Reference</h2>
+        
+        <h3>HTML Attributes</h3>
+        <div class="code-block">g-get="url"           - GET request to URL
+g-post="url"          - POST request to URL  
+g-args="data"         - Parameters for GET or POST data
+g-start="function"    - JavaScript function to call when request starts
+g-complete="function" - JavaScript function to call when request completes</div>
+        
+        <h3>Server Response Format</h3>
+        <div class="code-block">&lt;g-data id="element-id"&gt;
+    HTML content to insert into element
+&lt;/g-data&gt;
+
+&lt;g-run&gt;
+    JavaScript code to execute after DOM updates
+&lt;/g-run&gt;</div>
+        
+        <h3>ASP-Style Templating</h3>
+        <div class="code-block">&lt;% var name = "John"; %&gt;           - Execute JavaScript (no output)
+&lt;%= name %&gt;                      - Output variable/expression
+&lt;% if (condition) { %&gt; ... &lt;% } %&gt; - Conditional blocks
+&lt;% for (var i=0; i&lt;5; i++) { %&gt;   - Loop blocks</div>
+        
+        <h3>Getting Started</h3>
+        <div class="code-block">1. Include the library:
+   &lt;script src="gunbasic-v3.js"&gt;&lt;/script&gt;
+
+2. Add attributes to HTML elements:
+   &lt;button g-get="data.php"&gt;Load Data&lt;/button&gt;
+
+3. Create server responses:
+   &lt;g-data id="result"&gt;Content loaded!&lt;/g-data&gt;
+
+That's it! GunBasic handles the rest automatically.</div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<g-data id="post-result">
+    <h3>POST Request Success!</h3>
+    <p>Server received POST data successfully.</p>
+    <p>This would typically process: <code>username=john&action=login</code></p>
+    <div style="border: 1px solid #ddd; padding: 10px; background: #f0f0f0; margin: 10px 0;">
+        <strong>Server Response:</strong><br>
+        Status: Login successful<br>
+        User: john<br>
+        Action: login<br>
+        Timestamp: <span id="post-time"></span>
+    </div>
+    <p>✓ Authentication completed</p>
+</g-data>
+
+<g-run>
+    document.getElementById('post-time').textContent = new Date().toLocaleString();
+    console.log('POST response processed successfully');
+</g-run>

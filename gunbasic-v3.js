@@ -5,8 +5,12 @@
 	@Email: 	gunesh.raj@gmail.com
 	@Version: 	3.0
 	@License: 	GNU General Public License v2
+	@Notes: 	Modern framework with XML tags, clean HTML attributes, and ASP-style templating
+				NO backward compatibility - clean, modern approach only
 */
 
+
+// Initialize GunBasic when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     GunBasic.init();
 });
@@ -70,6 +74,7 @@ var GunBasic = {
             var elementId = match[1];
             var content = match[2];
             
+            // FIXED: Use the new ASP parsing logic
             content = this.parseASPTags(content);
             
             try {
@@ -95,47 +100,66 @@ var GunBasic = {
         }
     },
 
+    // COMPLETELY REWRITTEN ASP PARSER - FIXES LOOP ISSUE
     parseASPTags: function(content) {
         var self = this;
         
         try {
-            var statements = [];
-            var tempContent = content;
+            this.glog("ASP: Processing content with new parser");
             
-            tempContent = tempContent.replace(/<%\s*(?!=)([\s\S]*?)%>/g, function(match, code) {
-                statements.push(code);
-                return '___ASP_STATEMENT_' + (statements.length - 1) + '___';
-            });
+            // Convert ASP tags to JavaScript template approach
+            var jsCode = 'var __output = "";\n';
+            var currentPos = 0;
             
-            if (statements.length > 0) {
-                var combinedStatements = statements.join('\n');
-                eval(combinedStatements);
+            // Find all ASP tags and content between them
+            var aspRegex = /<%\s*(?!=)([\s\S]*?)%>|<%=\s*([\s\S]*?)\s*%>/g;
+            var match;
+            
+            while ((match = aspRegex.exec(content)) !== null) {
+                // Add any HTML content before this ASP tag as output
+                var htmlContent = content.substring(currentPos, match.index);
+                if (htmlContent) {
+                    jsCode += '__output += ' + JSON.stringify(htmlContent) + ';\n';
+                }
+                
+                if (match[1] !== undefined) {
+                    // This is a statement block <% code %>
+                    jsCode += match[1] + '\n';
+                } else if (match[2] !== undefined) {
+                    // This is an expression block <%= expression %>
+                    jsCode += '__output += String(' + match[2] + ');\n';
+                }
+                
+                currentPos = aspRegex.lastIndex;
             }
             
-            tempContent = tempContent.replace(/___ASP_STATEMENT_\d+___/g, '');
+            // Add any remaining HTML content
+            var remainingContent = content.substring(currentPos);
+            if (remainingContent) {
+                jsCode += '__output += ' + JSON.stringify(remainingContent) + ';\n';
+            }
             
-            tempContent = tempContent.replace(/<%=\s*([\s\S]*?)\s*%>/g, function(match, expression) {
-                try {
-                    var result = eval(expression);
-                    
-                    if (result === null || result === undefined) {
-                        return '';
-                    } else if (typeof result === 'object') {
-                        return JSON.stringify(result);
-                    } else {
-                        return String(result);
-                    }
-                } catch (err) {
-                    self.glog("Error in ASP expression: " + err.message);
-                    return '[Error: ' + err.message + ']';
-                }
-            });
+            jsCode += 'return __output;';
             
-            return tempContent;
+            // Log the generated JavaScript for debugging
+            this.glog("ASP: Generated JavaScript:");
+            this.glog(jsCode);
+            
+            // Execute the generated JavaScript
+            try {
+                var func = new Function(jsCode);
+                var result = func.call({});
+                this.glog("ASP: Execution successful, result length: " + result.length);
+                return result;
+            } catch (err) {
+                this.glog("ASP: Error executing generated code: " + err.message);
+                this.glog("ASP: Generated code was: " + jsCode);
+                return content;
+            }
             
         } catch (err) {
-            self.glog("Error in ASP processing: " + err.message);
-            return content; 
+            this.glog("ASP: Error in parsing: " + err.message);
+            return content;
         }
     },
 
@@ -178,7 +202,6 @@ var GunBasic = {
         try { 
             xmlHTTP = new XMLHttpRequest(); 
         } catch (e) { 
-            // Fallback for older browsers
             try { 
                 xmlHTTP = new ActiveXObject("Msxml2.XMLHTTP"); 
             } catch (e) { 
@@ -247,6 +270,7 @@ var GunBasic = {
     }
 };
 
+// Public API functions
 function autoajaxcall(objAJAX, method, path, query, vfunctionOnStart, vfunctionOnComplete) {
     return GunBasic.autoajaxcall(objAJAX, method, path, query, vfunctionOnStart, vfunctionOnComplete);
 }

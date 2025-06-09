@@ -1,0 +1,63 @@
+<g-data id="asp-result">
+    <%
+        // JavaScript variables and functions
+        var userName = "Raj Gun";
+        var items = ["Apple", "Banana", "Orange"];
+        var prices = [1.20, 0.80, 1.50];
+        var total = 0;
+        
+        function formatPrice(price) {
+            //return "$" + price.toFixed(2);
+            return "$" + price;
+
+        }
+        
+        // Calculate total
+        for (var i = 0; i < prices.length; i++) {
+            total += prices[i];
+        }
+        
+        var shippingThreshold = 3.00;
+    %>
+    
+    <h3>Welcome <%= userName %>!</h3>
+    <p>Your shopping cart:</p>
+    
+    <table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
+        <tr style="background: #f0f0f0;">
+            <th style="padding: 8px;">Item</th>
+            <th style="padding: 8px;">Price</th>
+        </tr>
+        <% for (var i = 0; i < items.length; i++) { %>
+            <tr>
+                <td style="padding: 8px;"><%= items[i] %></td>
+                <td style="padding: 8px;"><%= formatPrice(prices[i]) %></td>
+            </tr>
+        <% } %>
+        <tr style="background: #f0f0f0; font-weight: bold;">
+            <td style="padding: 8px;">Total</td>
+            <td style="padding: 8px;"><%= formatPrice(total) %></td>
+        </tr>
+    </table>
+    
+    <% if (total >= shippingThreshold) { %>
+        <p style="color: green; font-weight: bold;">✓ Free shipping applied!</p>
+    <% } else { %>
+        <p>Add <%= formatPrice(shippingThreshold - total) %> more for free shipping.</p>
+    <% } %>
+    
+    <div style="border: 1px solid #ddd; padding: 10px; background: #f9f9f9; margin: 10px 0;">
+        <strong>ASP Processing Summary:</strong><br>
+        Items in cart: <%= items.length %><br>
+        Total value: <%= formatPrice(total) %><br>
+        Functions used: formatPrice()<br>
+        Loops executed: Table generation loop<br>
+        Conditions: Shipping threshold check<br>
+        Generated at: <%= new Date().toLocaleString() %>
+    </div>
+</g-data>
+
+<g-run>
+    console.log('✅ ASP templating with loops working correctly!');
+    console.log('All table rows should be generated properly now');
+</g-run>

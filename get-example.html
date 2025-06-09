@@ -1,0 +1,16 @@
+<g-data id="get-result">
+    <h3>GET Request Success!</h3>
+    <p>This content was loaded via GET request.</p>
+    <p>Timestamp: <span id="get-time"></span></p>
+    <div style="border: 1px solid #ddd; padding: 10px; background: #f0f0f0; margin: 10px 0;">
+        <strong>Request Details:</strong><br>
+        Method: GET<br>
+        Status: 200 OK<br>
+        Content-Type: text/html
+    </div>
+</g-data>
+
+<g-run>
+    document.getElementById('get-time').textContent = new Date().toLocaleString();
+    console.log('GET response processed successfully');
+</g-run>
