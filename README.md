@@ -1,4 +1,4 @@
-# GunBasic-JS 3.0
+# GunBasic-JS 3.4
 
 A lightweight, modern AJAX framework with clean HTML attributes and client-side ASP-style templating.
 
@@ -11,17 +11,20 @@ v2 - New features with backward compatibility - not included
 v3 - with new features and no template backward compatibility.
 
 
+
 ## Features
 
 - ✅ **Clean HTML Attributes** - Semantic, separate attributes instead of comma-separated values
 - ✅ **XML Response Format** - Clean `<g-data>` and `<g-run>` tags instead of HTML comments  
 - ✅ **ASP-Style Templating** - Full JavaScript templating power on the client side
+- ✅ **Internal Templates** - Load and process templates from DOM elements with JSON data
+- ✅ **SwiftUI-Style UI Components** - Declarative UI building with component chaining
 - ✅ **Zero Dependencies** - No external libraries required
 - ✅ **Lightweight** - Only ~5KB minified
 - ✅ **Modern JavaScript** - ES5+ compatible, works in all modern browsers
 - ✅ **Multi Element Updates** - Updates Multiple Element ID rather than only 1
 - ✅ **Eval JavaScript** - Server Side JS Injection upon Update
-- 
+
 ## Quick Start
 
 ### 1. Include the Library
@@ -265,6 +268,394 @@ That's it! GunBasic handles the rest automatically.
 </g-data>
 ```
 
+## Internal Templating System
+
+GunBasic-JS 3.0 introduces a powerful internal templating system that allows you to define templates within your HTML and populate them with JSON data from API calls.
+
+### Basic Template Loading
+
+**HTML:**
+```html
+<!-- Define a template anywhere in your DOM -->
+<template g-data="user-template" style="display: none;">
+    <div class="user-card">
+        <h3><%= name %></h3>
+        <p>Email: <%= email %></p>
+        <p>Department: <%= department %></p>
+        <p>Joined: <%= formatDate(joinDate) %></p>
+        
+        <% if (isActive) { %>
+            <span class="badge active">Active</span>
+        <% } else { %>
+            <span class="badge inactive">Inactive</span>
+        <% } %>
+    </div>
+</template>
+
+<!-- Target element where template will be rendered -->
+<div id="user-display"></div>
+
+<!-- Button to load template with API data -->
+<button onclick="loadUserTemplate()">Load User Data</button>
+
+<script>
+function loadUserTemplate() {
+    // Load template with data from API
+    loadTemplate('api/user.php', 'user-template', 'user-display', function(data, html) {
+        console.log('Template loaded successfully');
+        console.log('Data received:', data);
+    });
+}
+
+// Helper function available in templates
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString();
+}
+</script>
+```
+
+**API Response (api/user.php):**
+```json
+{
+    "name": "Sarah Johnson",
+    "email": "sarah.johnson@company.com",
+    "department": "Engineering",
+    "joinDate": "2023-05-15",
+    "isActive": true
+}
+```
+
+### Multiple Templates
+
+```html
+<!-- User List Template -->
+<div g-data="users-list-template" style="display: none;">
+    <h2>Team Members (<%= users.length %>)</h2>
+    <div class="user-grid">
+        <% for (var i = 0; i < users.length; i++) { %>
+            <% var user = users[i]; %>
+            <div class="user-card">
+                <h4><%= user.name %></h4>
+                <p><%= user.role %></p>
+                <% if (user.avatar) { %>
+                    <img src="<%= user.avatar %>" alt="Avatar" class="avatar">
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Statistics Template -->
+<script type="text/template" id="stats-template">
+    <div class="stats-dashboard">
+        <div class="stat-card">
+            <h3><%= totalUsers %></h3>
+            <p>Total Users</p>
+        </div>
+        <div class="stat-card">
+            <h3><%= activeUsers %></h3>
+            <p>Active Users</p>
+        </div>
+        <div class="stat-card">
+            <h3><%= Math.round((activeUsers/totalUsers)*100) %>%</h3>
+            <p>Activity Rate</p>
+        </div>
+    </div>
+</script>
+
+<div id="users-container"></div>
+<div id="stats-container"></div>
+
+<script>
+function loadDashboard() {
+    // Load multiple templates
+    loadTemplate('api/users.php', 'users-list-template', 'users-container');
+    loadTemplate('api/stats.php', 'stats-template', 'stats-container');
+}
+</script>
+```
+
+### Template Functions Reference
+
+| Function | Purpose | Parameters |
+|----------|---------|------------|
+| `loadTemplate(apiUrl, templateId, targetId, onComplete)` | Load template with API data | API URL, template element ID/selector, target element ID, completion callback |
+| `loadTemplateUI(apiUrl, uiCode, targetId, onComplete)` | Load SwiftUI-style component with API data | API URL, UI component code, target element ID, completion callback |
+| `processUI(uiCode, jsonData)` | Process UI components with data | UI component code, JSON data object |
+
+## SwiftUI-Style UI Components
+
+GunBasic-JS 3.0 introduces a declarative UI system inspired by SwiftUI, allowing you to build interfaces using composable components with method chaining.
+
+### Basic Components
+
+#### Text Components
+```javascript
+// Simple text
+Text("Hello World")
+
+// Styled text
+Text("Welcome!")
+    .font("title")
+    .color("muted")
+    .padding("all", 3)
+
+// Dynamic text with data
+Text("User: " + userName)
+    .font("headline")
+```
+
+#### Layout Components
+```javascript
+// Vertical stack
+VStack([
+    Text("Header").font("title"),
+    Text("Content goes here"),
+    Text("Footer").color("muted")
+])
+
+// Horizontal stack with alignment
+HStack([
+    Text("Left"),
+    Spacer(),
+    Text("Right")
+]).justify("between")
+
+// Nested layouts
+VStack([
+    Text("Dashboard").font("title"),
+    HStack([
+        Text("Users: 150"),
+        Text("Active: 89")
+    ]).justify("between")
+])
+```
+
+### Form Components
+
+#### Text Input
+```javascript
+// Basic text field
+TextField("Username", "username")
+    .placeholder("Enter your username")
+    .required(true)
+
+// Email input
+TextField("Email Address", "email")
+    .type("email")
+    .placeholder("user@example.com")
+    .required(true)
+
+// Text area
+TextArea("Description", "description")
+    .placeholder("Enter description...")
+    .rows(4)
+    .required(false)
+```
+
+#### Buttons and Actions
+```javascript
+// Primary button
+Button("Save Changes", "saveData")
+    .style("primary")
+    .size("lg")
+
+// Icon button
+Button("Add Item", "addItem")
+    .style("success")
+    .icon("plus")
+
+// Outline button
+Button("Cancel", "cancelAction")
+    .style("outline")
+```
+
+#### Selection Components
+```javascript
+// Radio group
+RadioGroup("Gender", "gender", ["Male", "Female", "Other"])
+    .inline(true)
+    .value("Male")
+
+// Select dropdown
+Select("Country", "country", [
+    { value: "us", label: "United States" },
+    { value: "ca", label: "Canada" },
+    { value: "uk", label: "United Kingdom" }
+])
+    .placeholder("Choose a country")
+    .required(true)
+
+// Checkbox
+Checkbox("Subscribe to newsletter", "newsletter", "yes")
+    .checked(true)
+
+// Toggle switch
+Toggle("Enable notifications", "notifications")
+    .checked(false)
+```
+
+### Advanced Components
+
+#### Cards and Containers
+```javascript
+// Basic card
+Card("Welcome to our platform!")
+    .header("Getting Started")
+    .footer("Last updated: Today")
+
+// Card with components
+Card()
+    .header("User Profile")
+    .children([
+        Text("John Doe").font("title"),
+        Text("Software Engineer"),
+        HStack([
+            Button("Edit", "editProfile").style("primary"),
+            Button("Delete", "deleteProfile").style("danger")
+        ])
+    ])
+```
+
+#### Lists and Data Display
+```javascript
+// Dynamic list
+List(users, "id", function(user) {
+    return HStack([
+        Text(user.name).font("headline"),
+        Spacer(),
+        Badge(user.role).style("info")
+    ]);
+})
+
+// Pagination
+Pagination(currentPage, totalPages, "changePage")
+    .size("sm")
+    .maxVisible(5)
+```
+
+#### Interactive Components
+```javascript
+// Dropdown menu
+DropdownMenu("Actions", [
+    { label: "Edit", action: "editItem" },
+    { label: "Copy", action: "copyItem" },
+    { divider: true },
+    { label: "Delete", action: "deleteItem" }
+])
+    .style("primary")
+
+// Alert
+Alert("Your changes have been saved successfully!")
+    .style("success")
+    .dismissible(true)
+
+// Modal
+Modal("confirm-modal", "Confirm Action", "Are you sure you want to delete this item?")
+    .size("sm")
+    .actions([
+        Button("Cancel", "closeModal").style("secondary"),
+        Button("Delete", "confirmDelete").style("danger")
+    ])
+```
+
+### Complete UI Example
+
+```javascript
+// Define UI component
+function createUserDashboard() {
+    return VStack([
+        // Header
+        HStack([
+            Text("User Dashboard").font("title"),
+            Spacer(),
+            Button("Add User", "showAddUserModal")
+                .style("success")
+                .icon("plus")
+        ]).justify("between"),
+        
+        // Stats cards
+        HStack([
+            Card()
+                .children([
+                    Text(totalUsers.toString()).font("title"),
+                    Text("Total Users").color("muted")
+                ])
+                .textAlign("center"),
+            Card()
+                .children([
+                    Text(activeUsers.toString()).font("title"),
+                    Text("Active Users").color("muted")
+                ])
+                .textAlign("center"),
+            Card()
+                .children([
+                    Text(Math.round((activeUsers/totalUsers)*100) + "%").font("title"),
+                    Text("Activity Rate").color("muted")
+                ])
+                .textAlign("center")
+        ]),
+        
+        // User list
+        Card()
+            .header("Recent Users")
+            .children([
+                List(users, "id", function(user) {
+                    return HStack([
+                        VStack([
+                            Text(user.name).font("headline"),
+                            Text(user.email).color("muted")
+                        ]),
+                        Spacer(),
+                        VStack([
+                            Badge(user.role).style("info"),
+                            HStack([
+                                Button("Edit", function() { editUser(user.id); }).style("outline").size("sm"),
+                                Button("Delete", function() { deleteUser(user.id); }).style("danger").size("sm")
+                            ])
+                        ])
+                    ]);
+                })
+            ])
+    ]);
+}
+
+// Load with API data
+loadTemplateUI('api/dashboard.php', `
+    return createUserDashboard();
+`, 'dashboard-container');
+```
+
+### UI Component API Reference
+
+#### Layout Components
+- `VStack(children)` - Vertical stack layout
+- `HStack(children)` - Horizontal stack layout with `.justify()` modifier
+- `Spacer()` - Flexible spacer element
+
+#### Text Components
+- `Text(content)` - Text display with `.font()`, `.color()`, `.padding()` modifiers
+
+#### Form Components
+- `TextField(label, binding)` - Text input with `.placeholder()`, `.type()`, `.required()`, `.value()` modifiers
+- `TextArea(label, binding)` - Multi-line text input with `.rows()`, `.placeholder()` modifiers
+- `Button(label, action)` - Button with `.style()`, `.size()`, `.icon()` modifiers
+- `Select(label, binding, options)` - Dropdown select with `.placeholder()`, `.multiple()`, `.required()` modifiers
+- `RadioGroup(label, binding, options)` - Radio button group with `.inline()`, `.value()` modifiers
+- `Checkbox(label, binding, value)` - Checkbox with `.checked()`, `.disabled()` modifiers
+- `Toggle(label, binding)` - Toggle switch with `.checked()`, `.disabled()` modifiers
+
+#### Display Components
+- `Card(content)` - Card container with `.header()`, `.footer()`, `.children()` modifiers
+- `Badge(content)` - Badge/tag with `.style()`, `.pill()` modifiers
+- `Alert(content)` - Alert message with `.style()`, `.dismissible()` modifiers
+- `List(data, keyPath, itemBuilder)` - Dynamic list rendering
+
+#### Interactive Components
+- `Modal(id, title, content)` - Modal dialog with `.size()`, `.actions()`, `.children()` modifiers
+- `DropdownMenu(label, items)` - Dropdown menu with `.style()`, `.size()` modifiers
+- `Pagination(currentPage, totalPages, onPageChange)` - Pagination with `.size()`, `.maxVisible()` modifiers
+
 ## JavaScript API
 
 ### Core Functions
@@ -275,6 +666,11 @@ autoajaxcall(null, 'GET', 'api/data.php', '', onStart, onComplete);
 
 // Toggle element visibility
 toggleElement('elementId');
+
+// Template functions
+loadTemplate(apiUrl, templateId, targetId, onComplete);
+loadTemplateUI(apiUrl, uiCode, targetId, onComplete);
+processUI(uiCode, jsonData);
 
 // Access GunBasic object directly
 GunBasic.parseASPTags(content);  // Process ASP tags
@@ -471,6 +867,127 @@ document.querySelector('[g-post]').addEventListener('click', function() {
 </g-run>
 ```
 
+## Framework Comparison: GunBasic-JS vs HTMX, What to consider before choosing the frameworks.
+
+Both frameworks aim to enhance HTML with dynamic capabilities, but they take different approaches:
+
+### Philosophy and Architecture
+
+**GunBasic-JS:**
+- Emphasizes ASP-style server-side templating with client-side processing
+- Provides SwiftUI-inspired declarative UI components
+- Uses JSON API responses processed through internal templates
+- XML-based response format (`<g-data>`, `<g-run>`)
+- More opinionated about UI structure and data binding
+
+**HTMX:**
+- Focuses on extending HTML with hypermedia attributes
+- Server returns complete HTML fragments
+- Emphasizes REST/hypermedia principles
+- Uses standard HTTP responses
+- Framework-agnostic approach
+
+### Syntax Comparison
+
+**HTMX Approach:**
+```html
+<button hx-post="/clicked" 
+        hx-target="#result" 
+        hx-swap="innerHTML">
+    Click Me
+</button>
+```
+
+**GunBasic-JS Approach:**
+```html
+<button g-post="api/clicked.php" 
+        g-complete="onComplete">
+    Click Me
+</button>
+```
+
+### Data Handling
+
+**HTMX:**
+- Server returns HTML directly
+- Minimal client-side data processing
+- Form serialization handled automatically
+- Uses HTML form data or JSON
+
+**GunBasic-JS:**
+- Server returns JSON data
+- Rich client-side templating with ASP syntax
+- Manual data binding and processing
+- Internal template system for reusable components
+
+### UI Development
+
+**HTMX:**
+- Relies on server-generated HTML
+- CSS frameworks for styling
+- Limited client-side UI abstraction
+
+**GunBasic-JS:**
+- SwiftUI-style component system
+- Declarative UI building with method chaining
+- Built-in Bootstrap integration
+- Client-side component composition
+
+### Use Cases
+
+**Choose HTMX when:**
+- Building traditional server-rendered applications
+- Working with existing backend frameworks
+- Preferring hypermedia-driven architecture
+- Wanting minimal JavaScript complexity
+- Building content-heavy applications
+
+**Choose GunBasic-JS when:**
+- Building data-driven dashboards
+- Needing rich client-side templating
+- Preferring component-based UI development
+- Working with JSON APIs
+- Building single-page-like experiences
+- Wanting SwiftUI-style declarative syntax
+
+### Learning Curve
+
+**HTMX:**
+- Lower learning curve for HTML/CSS developers
+- Familiar REST concepts
+- Minimal JavaScript knowledge required
+
+**GunBasic-JS:**
+- Moderate learning curve
+- Requires JavaScript and templating knowledge
+- More concepts to master (ASP syntax, UI components)
+
+### Performance
+
+**HTMX:**
+- Minimal JavaScript overhead
+- Server does heavy lifting
+- Network transfers HTML content
+
+**GunBasic-JS:**
+- Slightly larger client-side footprint
+- Client-side template processing
+- Network transfers JSON data (typically smaller)
+
+### Community and Ecosystem
+
+**HTMX:**
+- Larger, more active community
+- Extensive documentation and examples
+- Strong momentum in web development
+
+**GunBasic-JS:**
+- Smaller community
+- Legacy framework with modern updates
+- Focused on specific use cases
+
+Both frameworks are valuable tools depending on your project requirements, team expertise, and architectural preferences.
+
 ## Browser Support
 
 - ✅ Chrome 30+
@@ -491,35 +1008,3 @@ document.querySelector('[g-post]').addEventListener('click', function() {
 <!-- [SGUN:elementId] -->content<!-- [EGUN:elementId] -->
 ```
 
-### New Format (GunBasic-JS 3.0)
-```html
-<!-- NEW: Clean separate attributes -->
-<button g-get="url" 
-        g-args="params"
-        g-start="onStart" 
-        g-complete="onComplete">Load</button>
-
-<!-- NEW: XML response format -->
-<g-data id="elementId">content</g-data>
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
-
-## License
-
-GNU General Public License v2
-
-## Author
-
-**Gunesh Raj** - Original creator  
-**Updated for 3.0** - Modern features and ASP-style templating
-
----
-
-**GunBasic-JS 3.0** - Simple, powerful, and elegant AJAX for the modern web.
