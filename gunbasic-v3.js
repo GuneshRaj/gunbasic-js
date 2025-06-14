@@ -11,6 +11,7 @@
 */
 
 
+
 // Initialize GunBasic when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     GunBasic.init();
@@ -29,17 +30,14 @@ var GunBasic = {
 
     bindHooks: function() {
         this.glog("Binding DOM hooks...");
-        
         var getElements = document.querySelectorAll('[g-get]');
         for (var i = 0; i < getElements.length; i++) {
             this.bindElement(getElements[i], 'GET');
         }
-
         var postElements = document.querySelectorAll('[g-post]');
         for (var i = 0; i < postElements.length; i++) {
             this.bindElement(postElements[i], 'POST');
         }
-        
         this.glog("Bound " + (getElements.length + postElements.length) + " elements");
     },
 
@@ -47,16 +45,12 @@ var GunBasic = {
         var self = this;
         var urlAttribute = method === 'GET' ? 'g-get' : 'g-post';
         var url = element.getAttribute(urlAttribute);
-        
         if (!url) return;
-
         var args = element.getAttribute('g-args') || element.getAttribute('g-data') || '';
         var onStart = element.getAttribute('g-start');
         var onComplete = element.getAttribute('g-complete');
-        
         var startFunction = onStart ? window[onStart] : null;
         var completeFunction = onComplete ? window[onComplete] : null;
-        
         if (onStart && typeof startFunction !== 'function') {
             this.glog("Warning: Start function '" + onStart + "' not found");
             startFunction = null;
@@ -65,12 +59,10 @@ var GunBasic = {
             this.glog("Warning: Complete function '" + onComplete + "' not found");
             completeFunction = null;
         }
-
         element.addEventListener('click', function(e) {
             e.preventDefault();
             self.autoajaxcall(null, method, url, args, startFunction, completeFunction);
         });
-        
         this.glog("Bound " + method + " to " + url);
     },
 
@@ -82,19 +74,13 @@ var GunBasic = {
 
     processXMLFormat: function(vdata) {
         this.glog("Processing XML format response");
-        
-        // Process g-data tags
         var gdataRegex = /<g-data\s+id=["']([^"']+)["']>([\s\S]*?)<\/g-data>/gi;
         var match;
         var updateCount = 0;
-        
         while ((match = gdataRegex.exec(vdata)) !== null) {
             var elementId = match[1];
             var content = match[2];
-            
-            // Process ASP tags in content
             content = this.parseASPTags(content);
-            
             try {
                 var element = document.getElementById(elementId);
                 if (element) {
@@ -108,14 +94,10 @@ var GunBasic = {
                 this.glog("Error updating element: " + elementId + " - " + err.message);
             }
         }
-
-        // Process g-run tags
         var grunRegex = /<g-run>([\s\S]*?)<\/g-run>/gi;
         var scriptCount = 0;
-        
         while ((match = grunRegex.exec(vdata)) !== null) {
             var jsCode = match[1];
-            
             try {
                 eval(jsCode);
                 scriptCount++;
@@ -124,7 +106,6 @@ var GunBasic = {
                 this.glog("Error in g-run execution: " + err.message);
             }
         }
-        
         this.glog("Response processing complete: " + updateCount + " elements updated, " + scriptCount + " scripts executed");
     },
 
@@ -161,9 +142,7 @@ var GunBasic = {
                 if (window.console && console.log) {
                     console.log('[GunBasic] ' + msg);
                 }
-            } catch (error1) {
-                // Silent fail
-            }
+            } catch (error1) {}
         }
     },
 
@@ -179,7 +158,6 @@ var GunBasic = {
             this.glog("Warning: Element not found for toggle: " + elementId);
             return;
         }
-        
         var isVisible = element.style.display !== 'none';
         element.style.display = isVisible ? 'none' : 'block';
         this.glog("Toggled element " + elementId + " to " + (isVisible ? "hidden" : "visible"));
@@ -191,11 +169,9 @@ var GunBasic = {
             connect: function(url, method, data, callback) {
                 var xhr = new XMLHttpRequest();
                 xhr.open(method, url, true);
-                
                 if (method.toUpperCase() === 'POST') {
                     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 }
-                
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4) {
                         if (callback) {
@@ -207,14 +183,12 @@ var GunBasic = {
                         }
                     }
                 };
-                
                 if (method.toUpperCase() === 'GET' && data) {
                     url += (url.indexOf('?') > -1 ? '&' : '?') + data;
                     xhr.send();
                 } else {
                     xhr.send(data || null);
                 }
-                
                 return xhr;
             }
         };
@@ -223,14 +197,11 @@ var GunBasic = {
     // === ASP TEMPLATING SYSTEM ===
     parseASPTagsWithData: function(content, jsonData) {
         var self = this;
-        
         try {
             this.glog("ASP: Starting parse with JSON data");
-            
             var aspPattern = /<%\s*([\s\S]*?)\s*%>/g;
             var result = content.replace(aspPattern, function(match, code) {
                 self.glog("ASP: Processing code block");
-                
                 try {
                     var variableDeclarations = [];
                     for (var key in jsonData) {
@@ -238,12 +209,7 @@ var GunBasic = {
                             variableDeclarations.push('var ' + key + ' = ' + JSON.stringify(jsonData[key]) + ';');
                         }
                     }
-                    
-                    var jsCode = 'var __output = "";\n' +
-                        variableDeclarations.join('\n') + '\n' +
-                        code + '\n' +
-                        'if (typeof __output !== "undefined") { return __output; } else { return ""; }';
-                    
+                    var jsCode = 'var __output = "";\n' + variableDeclarations.join('\n') + '\n' + code + '\nif (typeof __output !== "undefined") { return __output; } else { return ""; }';
                     var func = new Function(jsCode);
                     var output = func.call({});
                     self.glog("ASP: Code executed successfully, output length: " + output.length);
@@ -253,10 +219,8 @@ var GunBasic = {
                     return match;
                 }
             });
-            
             this.glog("ASP: Parse completed");
             return result;
-            
         } catch (err) {
             this.glog("ASP: Error in parseASPTagsWithData: " + err.message);
             return content;
@@ -265,45 +229,29 @@ var GunBasic = {
 
     parseASPTags: function(content) {
         var self = this;
-        
         try {
             this.glog("ASP: Processing content with enhanced parser");
-            
-            // Convert ASP tags to JavaScript template approach
             var jsCode = 'var __output = "";\n';
             var currentPos = 0;
-            
-            // Find all ASP tags and content between them
             var aspRegex = /<%\s*(?!=)([\s\S]*?)%>|<%=\s*([\s\S]*?)\s*%>/g;
             var match;
-            
             while ((match = aspRegex.exec(content)) !== null) {
-                // Add any HTML content before this ASP tag as output
                 var htmlContent = content.substring(currentPos, match.index);
                 if (htmlContent) {
                     jsCode += '__output += ' + JSON.stringify(htmlContent) + ';\n';
                 }
-                
                 if (match[1] !== undefined) {
-                    // This is a statement block <% code %>
                     jsCode += match[1] + '\n';
                 } else if (match[2] !== undefined) {
-                    // This is an expression block <%= expression %>
                     jsCode += '__output += String(' + match[2] + ');\n';
                 }
-                
                 currentPos = aspRegex.lastIndex;
             }
-            
-            // Add any remaining HTML content
             var remainingContent = content.substring(currentPos);
             if (remainingContent) {
                 jsCode += '__output += ' + JSON.stringify(remainingContent) + ';\n';
             }
-            
             jsCode += 'return __output;';
-            
-            // Execute the generated JavaScript
             try {
                 var func = new Function(jsCode);
                 var result = func.call({});
@@ -313,7 +261,6 @@ var GunBasic = {
                 this.glog("ASP: Error executing generated code: " + err.message);
                 return content;
             }
-            
         } catch (err) {
             this.glog("ASP: Error in parsing: " + err.message);
             return content;
@@ -323,14 +270,11 @@ var GunBasic = {
     // === TEMPLATE LOADING SYSTEM ===
     loadTemplate: function(apiUrl, templateId, targetId, onComplete) {
         var self = this;
-        
         this.glog("LoadTemplate: Starting - API: " + apiUrl + ", Template: " + templateId + ", Target: " + targetId);
-        
         var ajax = new this.ajaxStriker();
         ajax.connect(apiUrl, 'GET', '', function(response) {
             try {
                 self.glog("LoadTemplate: API response received, status: " + response.status);
-                
                 if (response.status === 200) {
                     var jsonData;
                     try {
@@ -340,19 +284,15 @@ var GunBasic = {
                         self.glog("LoadTemplate: JSON parse error - " + parseError.message);
                         return;
                     }
-                    
                     var templateElement = document.querySelector('[g-data="' + templateId + '"], #' + templateId);
                     if (!templateElement) {
                         self.glog("LoadTemplate: Template element not found - " + templateId);
                         return;
                     }
-                    
                     var templateContent = templateElement.innerHTML;
                     self.glog("LoadTemplate: Template content retrieved, length: " + templateContent.length);
-                    
                     var processedContent = self.parseASPTagsWithData(templateContent, jsonData);
                     self.glog("LoadTemplate: Template processed, result length: " + processedContent.length);
-                    
                     var targetElement = document.getElementById(targetId);
                     if (targetElement) {
                         targetElement.innerHTML = processedContent;
@@ -360,12 +300,10 @@ var GunBasic = {
                     } else {
                         self.glog("LoadTemplate: Error - Target element '" + targetId + "' not found");
                     }
-                    
                     if (onComplete && typeof onComplete === 'function') {
                         self.glog("LoadTemplate: Calling completion callback");
                         onComplete(jsonData, processedContent);
                     }
-                    
                 } else {
                     self.glog("LoadTemplate: API error - Status: " + response.status);
                 }
@@ -378,27 +316,18 @@ var GunBasic = {
     // UI processor integration
     // Dont modify this code. Its pretty bad. I will implement a plug in framework. Maybe by next year.
     processUI: function(uiCode, jsonData) {
-        // ES5 Fix: Remove default parameter
         if (typeof jsonData === 'undefined') {
             jsonData = {};
         }
-        
         var self = this;
-        
         try {
             this.glog("UI: Processing UI code");
-            
-            // ES5 Fix: Create context object manually instead of using spread operator
             var context = {};
-            
-            // Add JSON data properties
             for (var key in jsonData) {
                 if (jsonData.hasOwnProperty(key)) {
                     context[key] = jsonData[key];
                 }
             }
-            
-            // Add UI component functions
             context.VStack = this.createVStack.bind(this);
             context.HStack = this.createHStack.bind(this);
             context.Text = this.createText.bind(this);
@@ -417,45 +346,20 @@ var GunBasic = {
             context.Modal = this.createModal.bind(this);
             context.List = this.createList.bind(this);
             context.Spacer = this.createSpacer.bind(this);
-            
-            // ES5 Fix: Build variable declarations manually
+
+
+
             var variableDeclarations = [];
             for (var key in jsonData) {
                 if (jsonData.hasOwnProperty(key)) {
                     variableDeclarations.push('var ' + key + ' = arguments[0].' + key + ';');
                 }
             }
-            
-            // Execute UI code in context
-            var jsCode = '(function() {' +
-                variableDeclarations.join('\n') +
-                'var VStack = arguments[0].VStack;' +
-                'var HStack = arguments[0].HStack;' +
-                'var Text = arguments[0].Text;' +
-                'var TextField = arguments[0].TextField;' +
-                'var TextArea = arguments[0].TextArea;' +
-                'var Button = arguments[0].Button;' +
-                'var RadioGroup = arguments[0].RadioGroup;' +
-                'var Select = arguments[0].Select;' +
-                'var DropdownMenu = arguments[0].DropdownMenu;' +
-                'var Pagination = arguments[0].Pagination;' +
-                'var Checkbox = arguments[0].Checkbox;' +
-                'var Toggle = arguments[0].Toggle;' +
-                'var Badge = arguments[0].Badge;' +
-                'var Alert = arguments[0].Alert;' +
-                'var Card = arguments[0].Card;' +
-                'var Modal = arguments[0].Modal;' +
-                'var List = arguments[0].List;' +
-                'var Spacer = arguments[0].Spacer;' +
-                uiCode +
-                '})';
-            
+            var jsCode = '(function() {' + variableDeclarations.join('\n') + 'var VStack = arguments[0].VStack; var HStack = arguments[0].HStack; var Text = arguments[0].Text; var TextField = arguments[0].TextField; var TextArea = arguments[0].TextArea; var Button = arguments[0].Button; var RadioGroup = arguments[0].RadioGroup; var Select = arguments[0].Select; var DropdownMenu = arguments[0].DropdownMenu; var Pagination = arguments[0].Pagination; var Checkbox = arguments[0].Checkbox; var Toggle = arguments[0].Toggle; var Badge = arguments[0].Badge; var Alert = arguments[0].Alert; var Card = arguments[0].Card; var Modal = arguments[0].Modal; var List = arguments[0].List; var Spacer = arguments[0].Spacer;' + uiCode + '})';
             this.glog("UI: Generated execution code");
-            
             try {
                 var func = new Function('return ' + jsCode)();
                 var component = func.call(null, context);
-                
                 if (component) {
                     var result = this.renderUIComponent(component);
                     this.glog("UI: Processing successful, result length: " + result.length);
@@ -468,7 +372,6 @@ var GunBasic = {
                 this.glog("UI: Error executing code: " + err.message);
                 return '<div class="alert alert-danger">UI Error: ' + err.message + '</div>';
             }
-            
         } catch (err) {
             this.glog("UI: Error in processing: " + err.message);
             return '<div class="alert alert-danger">Processing Error: ' + err.message + '</div>';
@@ -478,14 +381,11 @@ var GunBasic = {
     // Enhanced loadTemplate to support UI processing
     loadTemplateUI: function(apiUrl, uiCode, targetId, onComplete) {
         var self = this;
-        
         this.glog("LoadTemplateUI: Starting - API: " + apiUrl + ", Target: " + targetId);
-        
         var ajax = new this.ajaxStriker();
         ajax.connect(apiUrl, 'GET', '', function(response) {
             try {
                 self.glog("LoadTemplateUI: API response received");
-                
                 var jsonData;
                 try {
                     jsonData = JSON.parse(response.responseText);
@@ -494,10 +394,8 @@ var GunBasic = {
                     self.glog("LoadTemplateUI: JSON parse error - " + parseError.message);
                     return;
                 }
-                
                 var processedContent = self.processUI(uiCode, jsonData);
                 self.glog("LoadTemplateUI: UI processed, result length: " + processedContent.length);
-                
                 var targetElement = document.getElementById(targetId);
                 if (targetElement) {
                     targetElement.innerHTML = processedContent;
@@ -505,12 +403,10 @@ var GunBasic = {
                 } else {
                     self.glog("LoadTemplateUI: Error - Target element '" + targetId + "' not found");
                 }
-                
                 if (onComplete && typeof onComplete === 'function') {
                     self.glog("LoadTemplateUI: Calling completion callback");
                     onComplete(jsonData, processedContent);
                 }
-                
             } catch (error) {
                 self.glog("LoadTemplateUI: Error processing response - " + error.message);
             }
@@ -520,7 +416,6 @@ var GunBasic = {
     // === UI COMPONENT RENDERER ===
     renderUIComponent: function(component) {
         if (!component) return '';
-        
         if (Array.isArray(component)) {
             var self = this;
             var results = [];
@@ -529,46 +424,26 @@ var GunBasic = {
             }
             return results.join('');
         }
-        
         switch (component.type) {
-            case 'VStack':
-                return this.renderVStack(component);
-            case 'HStack':
-                return this.renderHStack(component);
-            case 'Text':
-                return this.renderText(component);
-            case 'TextField':
-                return this.renderTextField(component);
-            case 'TextArea':
-                return this.renderTextArea(component);
-            case 'Button':
-                return this.renderButton(component);
-            case 'RadioGroup':
-                return this.renderRadioGroup(component);
-            case 'Select':
-                return this.renderSelect(component);
-            case 'DropdownMenu':
-                return this.renderDropdownMenu(component);
-            case 'Pagination':
-                return this.renderPagination(component);
-            case 'List':
-                return this.renderList(component);
-            case 'Spacer':
-                return this.renderSpacer(component);
-            case 'Checkbox':
-                return this.renderCheckbox(component);
-            case 'Toggle':
-                return this.renderToggle(component);
-            case 'Badge':
-                return this.renderBadge(component);
-            case 'Alert':
-                return this.renderAlert(component);
-            case 'Card':
-                return this.renderCard(component);
-            case 'Modal':
-                return this.renderModal(component);
-            default:
-                return '<div>Unknown component: ' + (component.type || 'undefined') + '</div>';
+            case 'VStack': return this.renderVStack(component);
+            case 'HStack': return this.renderHStack(component);
+            case 'Text': return this.renderText(component);
+            case 'TextField': return this.renderTextField(component);
+            case 'TextArea': return this.renderTextArea(component);
+            case 'Button': return this.renderButton(component);
+            case 'RadioGroup': return this.renderRadioGroup(component);
+            case 'Select': return this.renderSelect(component);
+            case 'DropdownMenu': return this.renderDropdownMenu(component);
+            case 'Pagination': return this.renderPagination(component);
+            case 'List': return this.renderList(component);
+            case 'Spacer': return this.renderSpacer(component);
+            case 'Checkbox': return this.renderCheckbox(component);
+            case 'Toggle': return this.renderToggle(component);
+            case 'Badge': return this.renderBadge(component);
+            case 'Alert': return this.renderAlert(component);
+            case 'Card': return this.renderCard(component);
+            case 'Modal': return this.renderModal(component);
+            default: return '<div>Unknown component: ' + (component.type || 'undefined') + '</div>';
         }
     },
 
@@ -619,7 +494,6 @@ var GunBasic = {
     renderText: function(component) {
         var tag = 'p';
         var classes = [];
-        
         if (component.modifiers) {
             if (component.modifiers.font === 'title') {
                 tag = 'h2';
@@ -637,7 +511,6 @@ var GunBasic = {
                 }
             }
         }
-        
         var classAttr = classes.length > 0 ? ' class="' + classes.join(' ') + '"' : '';
         return '<' + tag + classAttr + '>' + (component.content || '') + '</' + tag + '>';
     },
@@ -646,27 +519,16 @@ var GunBasic = {
     renderTextField: function(component) {
         var classes = ['form-control'];
         var attributes = [];
-        
         if (component.modifiers) {
-            if (component.modifiers.required) {
-                attributes.push('required');
-            }
-            if (component.modifiers.placeholder) {
-                attributes.push('placeholder="' + component.modifiers.placeholder + '"');
-            }
-            if (component.modifiers.value) {
-                attributes.push('value="' + component.modifiers.value + '"');
-            }
+            if (component.modifiers.required) attributes.push('required');
+            if (component.modifiers.placeholder) attributes.push('placeholder="' + component.modifiers.placeholder + '"');
+            if (component.modifiers.value) attributes.push('value="' + component.modifiers.value + '"');
             var inputType = component.modifiers.type || 'text';
             attributes.push('type="' + inputType + '"');
         }
-        
         if (component.label) {
             var required = component.modifiers && component.modifiers.required;
-            return '<div class="mb-3">' +
-                '<label class="form-label">' + component.label + (required ? ' <span class="text-danger">*</span>' : '') + '</label>' +
-                '<input class="' + classes.join(' ') + '" name="' + (component.binding || '') + '" ' + attributes.join(' ') + '>' +
-                '</div>';
+            return '<div class="mb-3"><label class="form-label">' + component.label + (required ? ' <span class="text-danger">*</span>' : '') + '</label><input class="' + classes.join(' ') + '" name="' + (component.binding || '') + '" ' + attributes.join(' ') + '></div>';
         } else {
             return '<input class="' + classes.join(' ') + '" name="' + (component.binding || '') + '" ' + attributes.join(' ') + '>';
         }
@@ -675,27 +537,15 @@ var GunBasic = {
     renderTextArea: function(component) {
         var classes = ['form-control'];
         var attributes = [];
-        
         if (component.modifiers) {
-            if (component.modifiers.required) {
-                attributes.push('required');
-            }
-            if (component.modifiers.placeholder) {
-                attributes.push('placeholder="' + component.modifiers.placeholder + '"');
-            }
-            if (component.modifiers.rows) {
-                attributes.push('rows="' + component.modifiers.rows + '"');
-            }
+            if (component.modifiers.required) attributes.push('required');
+            if (component.modifiers.placeholder) attributes.push('placeholder="' + component.modifiers.placeholder + '"');
+            if (component.modifiers.rows) attributes.push('rows="' + component.modifiers.rows + '"');
         }
-        
         var value = component.modifiers && component.modifiers.value ? component.modifiers.value : '';
-        
         if (component.label) {
             var required = component.modifiers && component.modifiers.required;
-            return '<div class="mb-3">' +
-                '<label class="form-label">' + component.label + (required ? ' <span class="text-danger">*</span>' : '') + '</label>' +
-                '<textarea class="' + classes.join(' ') + '" name="' + (component.binding || '') + '" ' + attributes.join(' ') + '>' + value + '</textarea>' +
-                '</div>';
+            return '<div class="mb-3"><label class="form-label">' + component.label + (required ? ' <span class="text-danger">*</span>' : '') + '</label><textarea class="' + classes.join(' ') + '" name="' + (component.binding || '') + '" ' + attributes.join(' ') + '>' + value + '</textarea></div>';
         } else {
             return '<textarea class="' + classes.join(' ') + '" name="' + (component.binding || '') + '" ' + attributes.join(' ') + '>' + value + '</textarea>';
         }
@@ -704,22 +554,18 @@ var GunBasic = {
     renderButton: function(component) {
         var classes = ['btn'];
         var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'primary';
-        
         if (style === 'outline') {
             classes.push('btn-outline-primary');
         } else {
             classes.push('btn-' + style);
         }
-        
         if (component.modifiers && component.modifiers.size) {
             classes.push('btn-' + component.modifiers.size);
         }
-        
         var icon = '';
         if (component.modifiers && component.modifiers.icon === 'plus') {
             icon = '<i class="bi bi-plus"></i> ';
         }
-        
         var onclick = '';
         if (component.action) {
             if (typeof component.action === 'string') {
@@ -728,7 +574,6 @@ var GunBasic = {
                 onclick = 'onclick="(' + component.action + ')()"';
             }
         }
-        
         return '<button class="' + classes.join(' ') + '" ' + onclick + '>' + icon + (component.label || '') + '</button>';
     },
 
@@ -736,31 +581,19 @@ var GunBasic = {
         if (!component.options || component.options.length === 0) {
             return '<div class="text-muted">No options available</div>';
         }
-        
         var inline = component.modifiers && component.modifiers.inline;
         var radioItems = [];
-        
         for (var i = 0; i < component.options.length; i++) {
             var option = component.options[i];
             var value = typeof option === 'object' ? option.value : option;
             var label = typeof option === 'object' ? option.label : option;
             var checked = component.modifiers && component.modifiers.value === value ? 'checked' : '';
             var disabled = typeof option === 'object' && option.disabled ? 'disabled' : '';
-            
             var radioClass = inline ? 'form-check form-check-inline' : 'form-check';
-            
-            radioItems.push('<div class="' + radioClass + '">' +
-                '<input class="form-check-input" type="radio" name="' + component.binding + '" ' +
-                'id="' + component.binding + '_' + i + '" value="' + value + '" ' + checked + ' ' + disabled + '>' +
-                '<label class="form-check-label" for="' + component.binding + '_' + i + '">' + label + '</label>' +
-                '</div>');
+            radioItems.push('<div class="' + radioClass + '"><input class="form-check-input" type="radio" name="' + component.binding + '" id="' + component.binding + '_' + i + '" value="' + value + '" ' + checked + ' ' + disabled + '><label class="form-check-label" for="' + component.binding + '_' + i + '">' + label + '</label></div>');
         }
-        
         if (component.label) {
-            return '<div class="mb-3">' +
-                '<label class="form-label">' + component.label + '</label>' +
-                radioItems.join('') +
-                '</div>';
+            return '<div class="mb-3"><label class="form-label">' + component.label + '</label>' + radioItems.join('') + '</div>';
         } else {
             return radioItems.join('');
         }
@@ -770,25 +603,16 @@ var GunBasic = {
         if (!component.options || component.options.length === 0) {
             return '<div class="text-muted">No options available</div>';
         }
-        
         var classes = ['form-select'];
         if (component.modifiers && component.modifiers.size) {
             classes.push('form-select-' + component.modifiers.size);
         }
-        
         var attributes = [];
         if (component.modifiers) {
-            if (component.modifiers.required) {
-                attributes.push('required');
-            }
-            if (component.modifiers.multiple) {
-                attributes.push('multiple');
-            }
-            if (component.modifiers.disabled) {
-                attributes.push('disabled');
-            }
+            if (component.modifiers.required) attributes.push('required');
+            if (component.modifiers.multiple) attributes.push('multiple');
+            if (component.modifiers.disabled) attributes.push('disabled');
         }
-        
         var optionItems = [];
         for (var i = 0; i < component.options.length; i++) {
             var option = component.options[i];
@@ -796,61 +620,42 @@ var GunBasic = {
             var label = typeof option === 'object' ? option.label : option;
             var selected = component.modifiers && component.modifiers.value === value ? 'selected' : '';
             var disabled = typeof option === 'object' && option.disabled ? 'disabled' : '';
-            
             optionItems.push('<option value="' + value + '" ' + selected + ' ' + disabled + '>' + label + '</option>');
         }
-        
         var placeholder = '';
         if (component.modifiers && component.modifiers.placeholder) {
             placeholder = '<option value="" disabled ' + (!component.modifiers.value ? 'selected' : '') + '>' + component.modifiers.placeholder + '</option>';
         }
-        
         var selectElement = '<select class="' + classes.join(' ') + '" name="' + (component.binding || '') + '" ' + attributes.join(' ') + '>' + placeholder + optionItems.join('') + '</select>';
-        
         if (component.label) {
             var required = component.modifiers && component.modifiers.required;
-            return '<div class="mb-3">' +
-                '<label class="form-label">' + component.label + (required ? ' <span class="text-danger">*</span>' : '') + '</label>' +
-                selectElement +
-                '</div>';
+            return '<div class="mb-3"><label class="form-label">' + component.label + (required ? ' <span class="text-danger">*</span>' : '') + '</label>' + selectElement + '</div>';
         } else {
             return selectElement;
         }
     },
 
-    renderCheckbox: function(component) {
+
+renderCheckbox: function(component) {
         var checked = component.modifiers && component.modifiers.checked ? 'checked' : '';
         var disabled = component.modifiers && component.modifiers.disabled ? 'disabled' : '';
         var inline = component.modifiers && component.modifiers.inline;
-        
         var checkboxClass = inline ? 'form-check form-check-inline' : 'form-check';
-        
-        return '<div class="' + checkboxClass + '">' +
-            '<input class="form-check-input" type="checkbox" name="' + (component.binding || '') + '" ' +
-            'id="' + (component.binding || 'checkbox') + '" value="' + (component.value || 'true') + '" ' + checked + ' ' + disabled + '>' +
-            '<label class="form-check-label" for="' + (component.binding || 'checkbox') + '">' + (component.label || '') + '</label>' +
-            '</div>';
+        return '<div class="' + checkboxClass + '"><input class="form-check-input" type="checkbox" name="' + (component.binding || '') + '" id="' + (component.binding || 'checkbox') + '" value="' + (component.value || 'true') + '" ' + checked + ' ' + disabled + '><label class="form-check-label" for="' + (component.binding || 'checkbox') + '">' + (component.label || '') + '</label></div>';
     },
 
     renderToggle: function(component) {
         var checked = component.modifiers && component.modifiers.checked ? 'checked' : '';
         var disabled = component.modifiers && component.modifiers.disabled ? 'disabled' : '';
-        
-        return '<div class="form-check form-switch">' +
-            '<input class="form-check-input" type="checkbox" role="switch" ' +
-            'name="' + (component.binding || '') + '" id="' + (component.binding || 'toggle') + '" ' + checked + ' ' + disabled + '>' +
-            '<label class="form-check-label" for="' + (component.binding || 'toggle') + '">' + (component.label || '') + '</label>' +
-            '</div>';
+        return '<div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" name="' + (component.binding || '') + '" id="' + (component.binding || 'toggle') + '" ' + checked + ' ' + disabled + '><label class="form-check-label" for="' + (component.binding || 'toggle') + '">' + (component.label || '') + '</label></div>';
     },
 
     renderDropdownMenu: function(component) {
         if (!component.items || component.items.length === 0) {
             return '<div class="text-muted">No menu items</div>';
         }
-        
         var buttonStyle = component.modifiers && component.modifiers.style ? component.modifiers.style : 'primary';
         var buttonSize = component.modifiers && component.modifiers.size ? ' btn-' + component.modifiers.size : '';
-        
         var menuItems = [];
         for (var i = 0; i < component.items.length; i++) {
             var item = component.items[i];
@@ -864,12 +669,7 @@ var GunBasic = {
                 menuItems.push('<li><a class="dropdown-item' + disabled + '" href="#"' + onclick + '>' + item.label + '</a></li>');
             }
         }
-        
-        return '<div class="dropdown">' +
-            '<button class="btn btn-' + buttonStyle + buttonSize + ' dropdown-toggle" type="button" ' +
-            'data-bs-toggle="dropdown" aria-expanded="false">' + (component.label || 'Menu') + '</button>' +
-            '<ul class="dropdown-menu">' + menuItems.join('') + '</ul>' +
-            '</div>';
+        return '<div class="dropdown"><button class="btn btn-' + buttonStyle + buttonSize + ' dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">' + (component.label || 'Menu') + '</button><ul class="dropdown-menu">' + menuItems.join('') + '</ul></div>';
     },
 
     renderPagination: function(component) {
@@ -879,20 +679,15 @@ var GunBasic = {
         var showFirst = component.modifiers && component.modifiers.showFirst !== false;
         var showLast = component.modifiers && component.modifiers.showLast !== false;
         var maxVisible = component.modifiers && component.modifiers.maxVisible ? component.modifiers.maxVisible : 5;
-        
         var startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
         var endPage = Math.min(totalPages, startPage + maxVisible - 1);
-        
         if (endPage - startPage + 1 < maxVisible) {
             startPage = Math.max(1, endPage - maxVisible + 1);
         }
-        
         var items = [];
-        
         var prevDisabled = currentPage <= 1 ? ' disabled' : '';
         var prevAction = component.onPageChange ? ' onclick="' + component.onPageChange + '(' + (currentPage - 1) + ')"' : '';
         items.push('<li class="page-item' + prevDisabled + '"><a class="page-link" href="#"' + prevAction + '>Previous</a></li>');
-        
         if (showFirst && startPage > 1) {
             var firstAction = component.onPageChange ? ' onclick="' + component.onPageChange + '(1)"' : '';
             items.push('<li class="page-item"><a class="page-link" href="#"' + firstAction + '>1</a></li>');
@@ -900,13 +695,11 @@ var GunBasic = {
                 items.push('<li class="page-item disabled"><span class="page-link">...</span></li>');
             }
         }
-        
         for (var i = startPage; i <= endPage; i++) {
             var active = i === currentPage ? ' active' : '';
             var pageAction = component.onPageChange ? ' onclick="' + component.onPageChange + '(' + i + ')"' : '';
             items.push('<li class="page-item' + active + '"><a class="page-link" href="#"' + pageAction + '>' + i + '</a></li>');
         }
-        
         if (showLast && endPage < totalPages) {
             if (endPage < totalPages - 1) {
                 items.push('<li class="page-item disabled"><span class="page-link">...</span></li>');
@@ -914,61 +707,46 @@ var GunBasic = {
             var lastAction = component.onPageChange ? ' onclick="' + component.onPageChange + '(' + totalPages + ')"' : '';
             items.push('<li class="page-item"><a class="page-link" href="#"' + lastAction + '>' + totalPages + '</a></li>');
         }
-        
         var nextDisabled = currentPage >= totalPages ? ' disabled' : '';
         var nextAction = component.onPageChange ? ' onclick="' + component.onPageChange + '(' + (currentPage + 1) + ')"' : '';
         items.push('<li class="page-item' + nextDisabled + '"><a class="page-link" href="#"' + nextAction + '>Next</a></li>');
-        
-        return '<nav aria-label="Pagination">' +
-            '<ul class="pagination' + size + '">' + items.join('') + '</ul>' +
-            '</nav>';
+        return '<nav aria-label="Pagination"><ul class="pagination' + size + '">' + items.join('') + '</ul></nav>';
     },
 
     renderList: function(component) {
         if (!component.data || component.data.length === 0) {
             return '<div class="text-muted">No items found</div>';
         }
-        
         var listItems = [];
         for (var i = 0; i < component.data.length; i++) {
             var item = component.data[i];
             var itemComponent = component.itemBuilder ? component.itemBuilder(item) : { type: 'Text', content: JSON.stringify(item) };
             listItems.push('<div class="list-group-item border-0">' + this.renderUIComponent(itemComponent) + '</div>');
         }
-        
         return '<div class="list-group list-group-flush">' + listItems.join('') + '</div>';
     },
 
     renderBadge: function(component) {
         var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'primary';
         var pill = component.modifiers && component.modifiers.pill ? ' rounded-pill' : '';
-        
         return '<span class="badge bg-' + style + pill + '">' + (component.content || '') + '</span>';
     },
 
     renderAlert: function(component) {
         var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'info';
         var dismissible = component.modifiers && component.modifiers.dismissible;
-        
         var alertClass = 'alert alert-' + style;
         if (dismissible) {
             alertClass += ' alert-dismissible fade show';
         }
-        
-        var closeButton = dismissible ? 
-            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' : '';
-        
-        return '<div class="' + alertClass + '" role="alert">' +
-            (component.content || '') +
-            closeButton +
-            '</div>';
+        var closeButton = dismissible ? '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' : '';
+        return '<div class="' + alertClass + '" role="alert">' + (component.content || '') + closeButton + '</div>';
     },
 
     renderCard: function(component) {
         var header = component.header ? '<div class="card-header">' + component.header + '</div>' : '';
         var footer = component.footer ? '<div class="card-footer">' + component.footer + '</div>' : '';
         var body = '';
-        
         if (component.children) {
             var childrenHTML = '';
             for (var i = 0; i < component.children.length; i++) {
@@ -978,7 +756,6 @@ var GunBasic = {
         } else {
             body = '<div class="card-body">' + (component.content || '') + '</div>';
         }
-        
         var classes = ['card'];
         if (component.modifiers && component.modifiers.border) {
             classes.push('border-' + component.modifiers.border);
@@ -986,7 +763,6 @@ var GunBasic = {
         if (component.modifiers && component.modifiers.textAlign) {
             classes.push('text-' + component.modifiers.textAlign);
         }
-        
         return '<div class="' + classes.join(' ') + '">' + header + body + footer + '</div>';
     },
 
@@ -994,13 +770,7 @@ var GunBasic = {
         var size = component.modifiers && component.modifiers.size ? ' modal-' + component.modifiers.size : '';
         var centered = component.modifiers && component.modifiers.centered ? ' modal-dialog-centered' : '';
         var scrollable = component.modifiers && component.modifiers.scrollable ? ' modal-dialog-scrollable' : '';
-        
-        var header = component.title ? 
-            '<div class="modal-header">' +
-            '<h1 class="modal-title fs-5">' + component.title + '</h1>' +
-            '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>' +
-            '</div>' : '';
-        
+        var header = component.title ? '<div class="modal-header"><h1 class="modal-title fs-5">' + component.title + '</h1><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>' : '';
         var footer = '';
         if (component.actions) {
             var actionsHTML = '';
@@ -1009,7 +779,6 @@ var GunBasic = {
             }
             footer = '<div class="modal-footer">' + actionsHTML + '</div>';
         }
-        
         var body = '';
         if (component.children) {
             var childrenHTML = '';
@@ -1020,12 +789,7 @@ var GunBasic = {
         } else {
             body = '<div class="modal-body">' + (component.content || '') + '</div>';
         }
-        
-        return '<div class="modal fade" id="' + (component.id || 'modal') + '" tabindex="-1" aria-hidden="true">' +
-            '<div class="modal-dialog' + size + centered + scrollable + '">' +
-            '<div class="modal-content">' + header + body + footer + '</div>' +
-            '</div>' +
-            '</div>';
+        return '<div class="modal fade" id="' + (component.id || 'modal') + '" tabindex="-1" aria-hidden="true"><div class="modal-dialog' + size + centered + scrollable + '"><div class="modal-content">' + header + body + footer + '</div></div></div>';
     },
 
     renderSpacer: function(component) {
@@ -1036,11 +800,9 @@ var GunBasic = {
     // TODO - Havnt passed all the test.
     getPaddingClasses: function(padding) {
         var classes = [];
-        
         for (var direction in padding) {
             if (padding.hasOwnProperty(direction)) {
                 var value = padding[direction];
-                
                 if (direction === 'all') {
                     classes.push('p-' + value);
                 } else if (direction === 'top') {
@@ -1054,7 +816,6 @@ var GunBasic = {
                 }
             }
         }
-        
         return classes;
     },
 
