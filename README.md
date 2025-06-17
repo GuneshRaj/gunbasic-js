@@ -1,4 +1,4 @@
-# GunBasic-JS 3.4
+# GunBasic-JS 3.6
 
 A lightweight, modern AJAX framework with clean HTML attributes and client-side ASP-style templating.
 

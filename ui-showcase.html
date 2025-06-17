@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GunBasic UI Component Showcase</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container my-4">
+        <h1 class="text-center mb-4">GunBasic UI Component Showcase</h1>
+        <p class="lead text-center">Complete SwiftUI-inspired component library</p>
+        
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="layout-tab" data-bs-toggle="tab" data-bs-target="#layout" type="button">Layout</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="text-tab" data-bs-toggle="tab" data-bs-target="#text" type="button">Text</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="forms-tab" data-bs-toggle="tab" data-bs-target="#forms" type="button">Forms</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="buttons-tab" data-bs-toggle="tab" data-bs-target="#buttons" type="button">Buttons</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="containers-tab" data-bs-toggle="tab" data-bs-target="#containers" type="button">Containers</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="complete-tab" data-bs-toggle="tab" data-bs-target="#complete" type="button">Complete App</button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="myTabContent">
+            
+            <!-- Layout Tab -->
+            <div class="tab-pane fade show active" id="layout" role="tabpanel">
+                <div class="row">
+                    <!-- VStack Demo -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>VStack - Vertical Layout</h5>
+                            </div>
+                            <div class="card-body">
+                                <pre class="bg-light p-3 rounded"><code>var layout = VStack([
+    Text("Item 1"),
+    Text("Item 2"), 
+    Text("Item 3")
+]);</code></pre>
+                                <button class="btn btn-primary" onclick="demoVStack()">Run Demo</button>
+                                <div id="vstack-result" class="mt-3 p-3 bg-light rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HStack Demo -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>HStack - Horizontal Layout</h5>
+                            </div>
+                            <div class="card-body">
+                                <pre class="bg-light p-3 rounded"><code>var layout = HStack([
+    Text("Left"),
+    Spacer(),
+    Text("Right")
+]).justify("between");</code></pre>
+                                <button class="btn btn-primary" onclick="demoHStack()">Run Demo</button>
+                                <div id="hstack-result" class="mt-3 p-3 bg-light rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text Tab -->
+            <div class="tab-pane fade" id="text" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Text Components</h5>
+                    </div>
+                    <div class="card-body">
+                        <pre class="bg-light p-3 rounded"><code>var textDemo = VStack([
+    Text("Title Text").font("title"),
+    Text("Headline Text").font("headline"),
+    Text("Muted Text").color("muted"),
+    Badge("Success").style("success"),
+    Badge("Pill Badge").style("primary").pill(true)
+]);</code></pre>
+                        <button class="btn btn-primary" onclick="demoText()">Run Demo</button>
+                        <div id="text-result" class="mt-3 p-3 bg-light rounded"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forms Tab -->
+            <div class="tab-pane fade" id="forms" role="tabpanel">
+                <div class="row">
+                    <!-- Text Fields -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Text Fields</h5>
+                            </div>
+                            <div class="card-body">
+                                <pre class="bg-light p-3 rounded"><code>var form = VStack([
+    TextField("Name", "name").placeholder("Enter name"),
+    TextField("Email", "email").type("email"),
+    TextField("Password", "pass").type("password"),
+    TextArea("Message", "msg").rows(3)
+]);</code></pre>
+                                <button class="btn btn-primary" onclick="demoTextFields()">Run Demo</button>
+                                <div id="textfields-result" class="mt-3 p-3 bg-light rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selection Controls -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Selection Controls</h5>
+                            </div>
+                            <div class="card-body">
+                                <pre class="bg-light p-3 rounded"><code>var controls = VStack([
+    RadioGroup("Choose", "option", [
+        {value: "1", label: "Option 1"},
+        {value: "2", label: "Option 2"}
+    ]),
+    Select("Select Item", "item", ["A", "B", "C"]),
+    Checkbox("I agree", "agree"),
+    Toggle("Enable", "notify")
+]);</code></pre>
+                                <button class="btn btn-primary" onclick="demoSelection()">Run Demo</button>
+                                <div id="selection-result" class="mt-3 p-3 bg-light rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons Tab -->
+            <div class="tab-pane fade" id="buttons" role="tabpanel">
+                <div class="row">
+                    <!-- Basic Buttons -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Buttons</h5>
+                            </div>
+                            <div class="card-body">
+                                <pre class="bg-light p-3 rounded"><code>var buttons = VStack([
+    Button("Primary", "test").style("primary"),
+    Button("Secondary", "test").style("secondary"),
+    Button("Large", "test").style("success").size("lg")
+]);</code></pre>
+                                <button class="btn btn-primary" onclick="demoButtons()">Run Demo</button>
+                                <div id="buttons-result" class="mt-3 p-3 bg-light rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dropdown -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Dropdown Menu</h5>
+                            </div>
+                            <div class="card-body">
+                                <pre class="bg-light p-3 rounded"><code>var dropdown = DropdownMenu("Actions", [
+    {label: "Edit", action: "test"},
+    {label: "Delete", action: "test"},
+    {divider: true},
+    {label: "Settings", action: "test"}
+]);</code></pre>
+                                <button class="btn btn-primary" onclick="demoDropdown()">Run Demo</button>
+                                <div id="dropdown-result" class="mt-3 p-3 bg-light rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Containers Tab -->
+            <div class="tab-pane fade" id="containers" role="tabpanel">
+                <div class="row">
+                    <!-- Cards -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Card Component</h5>
+                            </div>
+                            <div class="card-body">
+                                <pre class="bg-light p-3 rounded"><code>var card = Card().children([
+    Text("Card Title").font("title"),
+    Text("Card content here"),
+    Button("Action", "test").style("primary")
+]).header("Header").footer("Footer");</code></pre>
+                                <button class="btn btn-primary" onclick="demoCard()">Run Demo</button>
+                                <div id="card-result" class="mt-3 p-3 bg-light rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alerts -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Alert Component</h5>
+                            </div>
+                            <div class="card-body">
+                                <pre class="bg-light p-3 rounded"><code>var alerts = VStack([
+    Alert("Success message").style("success"),
+    Alert("Warning message").style("warning"),
+    Alert("Error message").style("danger")
+]);</code></pre>
+                                <button class="btn btn-primary" onclick="demoAlerts()">Run Demo</button>
+                                <div id="alerts-result" class="mt-3 p-3 bg-light rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complete App Tab -->
+            <div class="tab-pane fade" id="complete" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Complete Application Example</h5>
+                    </div>
+                    <div class="card-body">
+                        <pre class="bg-light p-3 rounded"><code>var app = VStack([
+    Card().children([
+        HStack([
+            Text("Dashboard").font("title"),
+            Spacer(),
+            Badge("Online").style("success")
+        ])
+    ]).header("App Header"),
+    
+    HStack([
+        Card().children([
+            Text("Navigation").font("headline"),
+            VStack([
+                Button("Home", "test").style("outline"),
+                Button("Users", "test").style("outline")
+            ])
+        ]),
+        Card().children([
+            Text("User Form").font("title"),
+            TextField("Name", "name").placeholder("Enter name"),
+            TextField("Email", "email").type("email"),
+            Button("Submit", "test").style("primary")
+        ])
+    ])
+]);</code></pre>
+                        <button class="btn btn-success btn-lg" onclick="demoCompleteApp()">Run Complete Demo</button>
+                        <div id="complete-result" class="mt-3 p-3 bg-light rounded"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Debug Section -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Framework Debug Info</h5>
+            </div>
+            <div class="card-body">
+                <button class="btn btn-info" onclick="showFrameworkInfo()">Show Framework Status</button>
+                <div id="debug-info" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="gunbasic-v3.js"></script>
+    
+    <script>
+        // Enable debug mode when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof GunBasic !== 'undefined') {
+                GunBasic.setDebug(true);
+                console.log('GunBasic framework loaded and debug enabled');
+            } else {
+                console.error('GunBasic framework not found!');
+            }
+        });
+
+        // Demo Functions
+        function demoVStack() {
+            try {
+                var layout = VStack([
+                    Text("Item 1"),
+                    Text("Item 2"), 
+                    Text("Item 3")
+                ]);
+                
+                var html = GunBasic.renderUIComponent(layout);
+                document.getElementById('vstack-result').innerHTML = html;
+            } catch (error) {
+                console.error('VStack Demo Error:', error);
+                document.getElementById('vstack-result').innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+            }
+        }
+
+        function demoHStack() {
+            try {
+                var layout = HStack([
+                    Text("Left"),
+                    Spacer(),
+                    Text("Right")
+                ]).justify("between");
+                
+                var html = GunBasic.renderUIComponent(layout);
+                document.getElementById('hstack-result').innerHTML = html;
+            } catch (error) {
+                console.error('HStack Demo Error:', error);
+                document.getElementById('hstack-result').innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+            }
+        }
+
+        function demoText() {
+            try {
+                var textDemo = VStack([
+                    Text("Title Text").font("title"),
+                    Text("Headline Text").font("headline"),
+                    Text("Muted Text").color("muted"),
+                    Badge("Success").style("success"),
+                    Badge("Pill Badge").style("primary").pill(true)
+                ]);
+                
+                var html = GunBasic.renderUIComponent(textDemo);
+                document.getElementById('text-result').innerHTML = html;
+            } catch (error) {
+                console.error('Text Demo Error:', error);
+                document.getElementById('text-result').innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+            }
+        }
+
+        function demoTextFields() {
+            try {
+                var form = VStack([
+                    TextField("Name", "name").placeholder("Enter your name"),
+                    TextField("Email", "email").type("email"),
+                    TextField("Password", "pass").type("password"),
+                    TextArea("Message", "msg").rows(3).placeholder("Your message...")
+                ]);
+                
+                var html = GunBasic.renderUIComponent(form);
+                document.getElementById('textfields-result').innerHTML = html;
+            } catch (error) {
+                console.error('TextFields Demo Error:', error);
+                document.getElementById('textfields-result').innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+            }
+        }
+
+        function demoSelection() {
+            try {
+                var controls = VStack([
+                    RadioGroup("Choose Option", "option", [
+                        {value: "1", label: "Option 1"},
+                        {value: "2", label: "Option 2"}
+                    ]),
+                    Select("Select Item", "item", ["Item A", "Item B", "Item C"]),
+                    Checkbox("I agree to terms", "agree"),
+                    Toggle("Enable notifications", "notify")
+                ]);
+                
+                var html = GunBasic.renderUIComponent(controls);
+                document.getElementById('selection-result').innerHTML = html;
+            } catch (error) {
+                console.error('Selection Demo Error:', error);
+                document.getElementById('selection-result').innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+            }
+        }
+
+        function demoButtons() {
+            try {
+                var buttons = VStack([
+                    Button("Primary Button", "testAction").style("primary"),
+                    Button("Secondary Button", "testAction").style("secondary"),
+                    Button("Large Success Button", "testAction").style("success").size("lg")
+                ]);
+                
+                var html = GunBasic.renderUIComponent(buttons);
+                document.getElementById('buttons-result').innerHTML = html;
+            } catch (error) {
+                console.error('Buttons Demo Error:', error);
+                document.getElementById('buttons-result').innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+            }
+        }
+
+        function demoDropdown() {
+            try {
+                var dropdown = DropdownMenu("Actions", [
+                    {label: "Edit", action: "testAction"},
+                    {label: "Delete", action: "testAction"},
+                    {divider: true},
+                    {header: "More Options"},
+                    {label: "Settings", action: "testAction"}
+                ]).style("primary");
+                
+                var html = GunBasic.renderUIComponent(dropdown);
+                document.getElementById('dropdown-result').innerHTML = html;
+            } catch (error) {
+                console.error('Dropdown Demo Error:', error);
+                document.getElementById('dropdown-result').innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+            }
+        }
+
+        function demoCard() {
+            try {
+                var card = Card().children([
+                    Text("Card Title").font("title"),
+                    Text("This is the card content with some example text."),
+                    Button("Card Action", "testAction").style("primary")
+                ]).header("Card Header").footer("Card Footer");
+                
+                var html = GunBasic.renderUIComponent(card);
+                document.getElementById('card-result').innerHTML = html;
+            } catch (error) {
+                console.error('Card Demo Error:', error);
+                document.getElementById('card-result').innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+            }
+        }
+
+        function demoAlerts() {
+            try {
+                var alerts = VStack([
+                    Alert("Success! Operation completed successfully.").style("success"),
+                    Alert("Warning! Please check your input.").style("warning"),
+                    Alert("Error! Something went wrong.").style("danger")
+                ]);
+                
+                var html = GunBasic.renderUIComponent(alerts);
+                document.getElementById('alerts-result').innerHTML = html;
+            } catch (error) {
+                console.error('Alerts Demo Error:', error);
+                document.getElementById('alerts-result').innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+            }
+        }
+
+        function demoCompleteApp() {
+            try {
+                var app = VStack([
+                    // Header
+                    Card().children([
+                        HStack([
+                            Text("Dashboard").font("title"),
+                            Spacer(),
+                            Badge("Online").style("success").pill(true)
+                        ])
+                    ]).header("Application Header"),
+                    
+                    // Main Content
+                    HStack([
+                        // Sidebar
+                        Card().children([
+                            Text("Navigation").font("headline"),
+                            VStack([
+                                Button("Dashboard", "testAction").style("outline"),
+                                Button("Users", "testAction").style("outline"),
+                                Button("Settings", "testAction").style("outline")
+                            ])
+                        ]),
+                        
+                        // Content Area
+                        Card().children([
+                            Text("User Registration").font("title"),
+                            TextField("Full Name", "name").placeholder("Enter your name"),
+                            TextField("Email", "email").type("email").placeholder("user@example.com"),
+                            HStack([
+                                Button("Register", "testAction").style("primary"),
+                                Button("Cancel", "testAction").style("secondary")
+                            ])
+                        ])
+                    ])
+                ]);
+                
+                var html = GunBasic.renderUIComponent(app);
+                document.getElementById('complete-result').innerHTML = html;
+            } catch (error) {
+                console.error('Complete App Demo Error:', error);
+                document.getElementById('complete-result').innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+            }
+        }
+
+        function showFrameworkInfo() {
+            try {
+                var info = '<h6>Framework Status</h6>';
+                info += '<ul>';
+                info += '<li><strong>GunBasic Available:</strong> ' + (typeof GunBasic !== 'undefined' ? '✅ Yes' : '❌ No') + '</li>';
+                info += '<li><strong>Version:</strong> ' + (typeof GunBasic !== 'undefined' ? GunBasic.version : 'N/A') + '</li>';
+                info += '<li><strong>Debug Mode:</strong> ' + (typeof GunBasic !== 'undefined' ? (GunBasic.debugMode ? '✅ Enabled' : '❌ Disabled') : 'N/A') + '</li>';
+                info += '</ul>';
+                
+                info += '<h6>Global Functions</h6>';
+                info += '<div class="row">';
+                info += '<div class="col-md-6"><ul>';
+                info += '<li>VStack: ' + typeof VStack + '</li>';
+                info += '<li>HStack: ' + typeof HStack + '</li>';
+                info += '<li>Text: ' + typeof Text + '</li>';
+                info += '<li>TextField: ' + typeof TextField + '</li>';
+                info += '<li>Button: ' + typeof Button + '</li>';
+                info += '</ul></div>';
+                info += '<div class="col-md-6"><ul>';
+                info += '<li>Card: ' + typeof Card + '</li>';
+                info += '<li>Alert: ' + typeof Alert + '</li>';
+                info += '<li>Badge: ' + typeof Badge + '</li>';
+                info += '<li>Select: ' + typeof Select + '</li>';
+                info += '<li>Toggle: ' + typeof Toggle + '</li>';
+                info += '</ul></div>';
+                info += '</div>';
+                
+                document.getElementById('debug-info').innerHTML = info;
+            } catch (error) {
+                console.error('Framework Info Error:', error);
+                document.getElementById('debug-info').innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+            }
+        }
+
+        // Test action function for button demos
+        function testAction() {
+            alert('Button clicked! GunBasic components are working.');
+        }
+    </script>
+</body>
+</html>

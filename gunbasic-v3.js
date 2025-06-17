@@ -1,34 +1,30 @@
 /*
-	@Project:	GunBasic-JS 3.4
-	@Website:	Updated from original http://code.google.com/p/gunbasic-js/
-	@Author: 	Gunesh Raj
-	@Email: 	gunesh.raj@gmail.com
-	@Version: 	3.4
-	@License: 	GNU General Public License v2
-	@Notes: 	Modern framework with XML tags, clean HTML attributes, and ASP-style templating, with loading internal template and SwiftUI Style UI Declarations
-				NO backward compatibility - clean, modern approach only
-                FYI - Messed up merging workflows. Older functions may be missing in incremental versions as I would refactor into new functions and often forget to merge back. Not a feature, but an introduced bug.
+    @Project:	GunBasic-JS 3.6 - COMPLETE IMPLEMENTATION
+    @Website:	Updated from original http://code.google.com/p/gunbasic-js/
+    @Author: 	Gunesh Raj
+    @Email: 	gunesh.raj@gmail.com
+    @Version: 	3.6
+    @License: 	GNU General Public License v2
+    @Notes: 	Adding in new functions in the framework with ALL UI components implemented.
 */
 
-
-
 // Initialize GunBasic when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     GunBasic.init();
 });
 
 var GunBasic = {
-    version: "3.4.0",
+    version: "3.6.0",
     debugMode: false,
 
     // === INITIALIZATION SYSTEM ===
-    init: function() {
+    init: function () {
         this.glog("GunBasic " + this.version + " initializing...");
         this.bindHooks();
         this.glog("GunBasic initialization complete");
     },
 
-    bindHooks: function() {
+    bindHooks: function () {
         this.glog("Binding DOM hooks...");
         var getElements = document.querySelectorAll('[g-get]');
         for (var i = 0; i < getElements.length; i++) {
@@ -41,7 +37,7 @@ var GunBasic = {
         this.glog("Bound " + (getElements.length + postElements.length) + " elements");
     },
 
-    bindElement: function(element, method) {
+    bindElement: function (element, method) {
         var self = this;
         var urlAttribute = method === 'GET' ? 'g-get' : 'g-post';
         var url = element.getAttribute(urlAttribute);
@@ -59,7 +55,7 @@ var GunBasic = {
             this.glog("Warning: Complete function '" + onComplete + "' not found");
             completeFunction = null;
         }
-        element.addEventListener('click', function(e) {
+        element.addEventListener('click', function (e) {
             e.preventDefault();
             self.autoajaxcall(null, method, url, args, startFunction, completeFunction);
         });
@@ -67,12 +63,12 @@ var GunBasic = {
     },
 
     // === RESPONSE PROCESSING SYSTEM ===
-    autoajax: function(vdata) {
+    autoajax: function (vdata) {
         this.glog("Processing server response...");
         this.processXMLFormat(vdata);
     },
 
-    processXMLFormat: function(vdata) {
+    processXMLFormat: function (vdata) {
         this.glog("Processing XML format response");
         var gdataRegex = /<g-data\s+id=["']([^"']+)["']>([\s\S]*?)<\/g-data>/gi;
         var match;
@@ -110,7 +106,7 @@ var GunBasic = {
     },
 
     // === CORE AJAX SYSTEM ===
-    autoajaxcall: function(objAJAX, method, path, query, vfunctionOnStart, vfunctionOnComplete) {
+    autoajaxcall: function (objAJAX, method, path, query, vfunctionOnStart, vfunctionOnComplete) {
         if (objAJAX == null) {
             this.glog("Starting AJAX call: " + method + " " + path);
             if (vfunctionOnStart != null) {
@@ -119,7 +115,7 @@ var GunBasic = {
             }
             objAJAX = new this.ajaxStriker();
             var self = this;
-            objAJAX.connect(path, method, query, function(ajax) {
+            objAJAX.connect(path, method, query, function (ajax) {
                 self.glog("AJAX response received, status: " + ajax.status);
                 if (ajax.status === 200) {
                     var dx = ajax.responseText;
@@ -136,23 +132,23 @@ var GunBasic = {
     },
 
     // === LOGGING SYSTEM ===
-    glog: function(msg) {
+    glog: function (msg) {
         if (this.debugMode) {
             try {
                 if (window.console && console.log) {
                     console.log('[GunBasic] ' + msg);
                 }
-            } catch (error1) {}
+            } catch (error1) { }
         }
     },
 
-    setDebug: function(debug) {
+    setDebug: function (debug) {
         this.debugMode = debug;
         this.glog("Debug mode " + (debug ? "enabled" : "disabled"));
     },
 
     // === UTILITY FUNCTIONS ===
-    toggleElement: function(elementId) {
+    toggleElement: function (elementId) {
         var element = document.getElementById(elementId);
         if (!element) {
             this.glog("Warning: Element not found for toggle: " + elementId);
@@ -164,15 +160,15 @@ var GunBasic = {
     },
 
     // === AJAX WRAPPER ===
-    ajaxStriker: function() {
+    ajaxStriker: function () {
         return {
-            connect: function(url, method, data, callback) {
+            connect: function (url, method, data, callback) {
                 var xhr = new XMLHttpRequest();
                 xhr.open(method, url, true);
                 if (method.toUpperCase() === 'POST') {
                     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 }
-                xhr.onreadystatechange = function() {
+                xhr.onreadystatechange = function () {
                     if (xhr.readyState === 4) {
                         if (callback) {
                             callback({
@@ -195,12 +191,12 @@ var GunBasic = {
     },
 
     // === ASP TEMPLATING SYSTEM ===
-    parseASPTagsWithData: function(content, jsonData) {
+    parseASPTagsWithData: function (content, jsonData) {
         var self = this;
         try {
             this.glog("ASP: Starting parse with JSON data");
             var aspPattern = /<%\s*([\s\S]*?)\s*%>/g;
-            var result = content.replace(aspPattern, function(match, code) {
+            var result = content.replace(aspPattern, function (match, code) {
                 self.glog("ASP: Processing code block");
                 try {
                     var variableDeclarations = [];
@@ -209,7 +205,34 @@ var GunBasic = {
                             variableDeclarations.push('var ' + key + ' = ' + JSON.stringify(jsonData[key]) + ';');
                         }
                     }
-                    var jsCode = 'var __output = "";\n' + variableDeclarations.join('\n') + '\n' + code + '\nif (typeof __output !== "undefined") { return __output; } else { return ""; }';
+
+                    // Add UI component functions to context
+                    var componentDeclarations = [
+                        'var VStack = GunBasic.createVStack.bind(GunBasic);',
+                        'var HStack = GunBasic.createHStack.bind(GunBasic);',
+                        'var Text = GunBasic.createText.bind(GunBasic);',
+                        'var TextField = GunBasic.createTextField.bind(GunBasic);',
+                        'var TextArea = GunBasic.createTextArea.bind(GunBasic);',
+                        'var Button = GunBasic.createButton.bind(GunBasic);',
+                        'var RadioGroup = GunBasic.createRadioGroup.bind(GunBasic);',
+                        'var Select = GunBasic.createSelect.bind(GunBasic);',
+                        'var Checkbox = GunBasic.createCheckbox.bind(GunBasic);',
+                        'var Toggle = GunBasic.createToggle.bind(GunBasic);',
+                        'var DropdownMenu = GunBasic.createDropdownMenu.bind(GunBasic);',
+                        'var List = GunBasic.createList.bind(GunBasic);',
+                        'var Pagination = GunBasic.createPagination.bind(GunBasic);',
+                        'var Badge = GunBasic.createBadge.bind(GunBasic);',
+                        'var Alert = GunBasic.createAlert.bind(GunBasic);',
+                        'var Card = GunBasic.createCard.bind(GunBasic);',
+                        'var Modal = GunBasic.createModal.bind(GunBasic);',
+                        'var Spacer = GunBasic.createSpacer.bind(GunBasic);'
+                    ];
+
+                    var jsCode = 'var __output = "";\n' +
+                        variableDeclarations.join('\n') + '\n' +
+                        componentDeclarations.join('\n') + '\n' +
+                        code +
+                        '\nif (typeof __output !== "undefined") { return __output; } else { return ""; }';
                     var func = new Function(jsCode);
                     var output = func.call({});
                     self.glog("ASP: Code executed successfully, output length: " + output.length);
@@ -227,11 +250,36 @@ var GunBasic = {
         }
     },
 
-    parseASPTags: function(content) {
+    parseASPTags: function (content) {
         var self = this;
         try {
             this.glog("ASP: Processing content with enhanced parser");
             var jsCode = 'var __output = "";\n';
+
+            // Add UI component functions to context
+            var componentDeclarations = [
+                'var VStack = GunBasic.createVStack.bind(GunBasic);',
+                'var HStack = GunBasic.createHStack.bind(GunBasic);',
+                'var Text = GunBasic.createText.bind(GunBasic);',
+                'var TextField = GunBasic.createTextField.bind(GunBasic);',
+                'var TextArea = GunBasic.createTextArea.bind(GunBasic);',
+                'var Button = GunBasic.createButton.bind(GunBasic);',
+                'var RadioGroup = GunBasic.createRadioGroup.bind(GunBasic);',
+                'var Select = GunBasic.createSelect.bind(GunBasic);',
+                'var Checkbox = GunBasic.createCheckbox.bind(GunBasic);',
+                'var Toggle = GunBasic.createToggle.bind(GunBasic);',
+                'var DropdownMenu = GunBasic.createDropdownMenu.bind(GunBasic);',
+                'var List = GunBasic.createList.bind(GunBasic);',
+                'var Pagination = GunBasic.createPagination.bind(GunBasic);',
+                'var Badge = GunBasic.createBadge.bind(GunBasic);',
+                'var Alert = GunBasic.createAlert.bind(GunBasic);',
+                'var Card = GunBasic.createCard.bind(GunBasic);',
+                'var Modal = GunBasic.createModal.bind(GunBasic);',
+                'var Spacer = GunBasic.createSpacer.bind(GunBasic);'
+            ];
+
+            jsCode += componentDeclarations.join('\n') + '\n';
+
             var currentPos = 0;
             var aspRegex = /<%\s*(?!=)([\s\S]*?)%>|<%=\s*([\s\S]*?)\s*%>/g;
             var match;
@@ -268,11 +316,11 @@ var GunBasic = {
     },
 
     // === TEMPLATE LOADING SYSTEM ===
-    loadTemplate: function(apiUrl, templateId, targetId, onComplete) {
+    loadTemplate: function (apiUrl, templateId, targetId, onComplete) {
         var self = this;
         this.glog("LoadTemplate: Starting - API: " + apiUrl + ", Template: " + templateId + ", Target: " + targetId);
         var ajax = new this.ajaxStriker();
-        ajax.connect(apiUrl, 'GET', '', function(response) {
+        ajax.connect(apiUrl, 'GET', '', function (response) {
             try {
                 self.glog("LoadTemplate: API response received, status: " + response.status);
                 if (response.status === 200) {
@@ -290,6 +338,10 @@ var GunBasic = {
                         return;
                     }
                     var templateContent = templateElement.innerHTML;
+
+                    // Decode HTML entities
+                    templateContent = templateContent.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+
                     self.glog("LoadTemplate: Template content retrieved, length: " + templateContent.length);
                     var processedContent = self.parseASPTagsWithData(templateContent, jsonData);
                     self.glog("LoadTemplate: Template processed, result length: " + processedContent.length);
@@ -315,7 +367,7 @@ var GunBasic = {
 
     // UI processor integration
     // Dont modify this code. Its pretty bad. I will implement a plug in framework. Maybe by next year.
-    processUI: function(uiCode, jsonData) {
+    processUI: function (uiCode, jsonData) {
         if (typeof jsonData === 'undefined') {
             jsonData = {};
         }
@@ -346,9 +398,6 @@ var GunBasic = {
             context.Modal = this.createModal.bind(this);
             context.List = this.createList.bind(this);
             context.Spacer = this.createSpacer.bind(this);
-
-
-
             var variableDeclarations = [];
             for (var key in jsonData) {
                 if (jsonData.hasOwnProperty(key)) {
@@ -378,12 +427,11 @@ var GunBasic = {
         }
     },
 
-    // Enhanced loadTemplate to support UI processing
-    loadTemplateUI: function(apiUrl, uiCode, targetId, onComplete) {
+    loadTemplateUI: function (apiUrl, uiCode, targetId, onComplete) {
         var self = this;
         this.glog("LoadTemplateUI: Starting - API: " + apiUrl + ", Target: " + targetId);
         var ajax = new this.ajaxStriker();
-        ajax.connect(apiUrl, 'GET', '', function(response) {
+        ajax.connect(apiUrl, 'GET', '', function (response) {
             try {
                 self.glog("LoadTemplateUI: API response received");
                 var jsonData;
@@ -414,7 +462,7 @@ var GunBasic = {
     },
 
     // === UI COMPONENT RENDERER ===
-    renderUIComponent: function(component) {
+    renderUIComponent: function (component) {
         if (!component) return '';
         if (Array.isArray(component)) {
             var self = this;
@@ -424,7 +472,11 @@ var GunBasic = {
             }
             return results.join('');
         }
-        switch (component.type) {
+
+        // Check componentType instead of type
+        var compType = component.componentType || component.type;
+
+        switch (compType) {
             case 'VStack': return this.renderVStack(component);
             case 'HStack': return this.renderHStack(component);
             case 'Text': return this.renderText(component);
@@ -443,12 +495,12 @@ var GunBasic = {
             case 'Alert': return this.renderAlert(component);
             case 'Card': return this.renderCard(component);
             case 'Modal': return this.renderModal(component);
-            default: return '<div>Unknown component: ' + (component.type || 'undefined') + '</div>';
+            default: return '<div>Unknown component: ' + (compType || 'undefined') + '</div>';
         }
     },
 
-    // Layout component renderers
-    renderVStack: function(component) {
+    // === LAYOUT COMPONENT RENDERERS ===
+    renderVStack: function (component) {
         var classes = ['d-flex', 'flex-column'];
         if (component.modifiers && component.modifiers.padding) {
             var paddingClasses = this.getPaddingClasses(component.modifiers.padding);
@@ -465,7 +517,7 @@ var GunBasic = {
         return '<div class="' + classes.join(' ') + '">' + childrenHTML + '</div>';
     },
 
-    renderHStack: function(component) {
+    renderHStack: function (component) {
         var classes = ['d-flex', 'flex-row'];
         if (component.modifiers) {
             if (component.modifiers.justify === 'end') {
@@ -491,7 +543,12 @@ var GunBasic = {
         return '<div class="' + classes.join(' ') + '">' + childrenHTML + '</div>';
     },
 
-    renderText: function(component) {
+    renderSpacer: function (component) {
+        return '<div class="flex-grow-1"></div>';
+    },
+
+    // === TEXT COMPONENT RENDERERS ===
+    renderText: function (component) {
         var tag = 'p';
         var classes = [];
         if (component.modifiers) {
@@ -515,8 +572,14 @@ var GunBasic = {
         return '<' + tag + classAttr + '>' + (component.content || '') + '</' + tag + '>';
     },
 
-    // Form component renderers
-    renderTextField: function(component) {
+    renderBadge: function (component) {
+        var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'primary';
+        var pill = component.modifiers && component.modifiers.pill ? ' rounded-pill' : '';
+        return '<span class="badge bg-' + style + pill + '">' + (component.content || '') + '</span>';
+    },
+
+    // === FORM COMPONENT RENDERERS ===
+    renderTextField: function (component) {
         var classes = ['form-control'];
         var attributes = [];
         if (component.modifiers) {
@@ -534,7 +597,7 @@ var GunBasic = {
         }
     },
 
-    renderTextArea: function(component) {
+    renderTextArea: function (component) {
         var classes = ['form-control'];
         var attributes = [];
         if (component.modifiers) {
@@ -551,33 +614,7 @@ var GunBasic = {
         }
     },
 
-    renderButton: function(component) {
-        var classes = ['btn'];
-        var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'primary';
-        if (style === 'outline') {
-            classes.push('btn-outline-primary');
-        } else {
-            classes.push('btn-' + style);
-        }
-        if (component.modifiers && component.modifiers.size) {
-            classes.push('btn-' + component.modifiers.size);
-        }
-        var icon = '';
-        if (component.modifiers && component.modifiers.icon === 'plus') {
-            icon = '<i class="bi bi-plus"></i> ';
-        }
-        var onclick = '';
-        if (component.action) {
-            if (typeof component.action === 'string') {
-                onclick = 'onclick="' + component.action + '()"';
-            } else {
-                onclick = 'onclick="(' + component.action + ')()"';
-            }
-        }
-        return '<button class="' + classes.join(' ') + '" ' + onclick + '>' + icon + (component.label || '') + '</button>';
-    },
-
-    renderRadioGroup: function(component) {
+    renderRadioGroup: function (component) {
         if (!component.options || component.options.length === 0) {
             return '<div class="text-muted">No options available</div>';
         }
@@ -599,7 +636,7 @@ var GunBasic = {
         }
     },
 
-    renderSelect: function(component) {
+    renderSelect: function (component) {
         if (!component.options || component.options.length === 0) {
             return '<div class="text-muted">No options available</div>';
         }
@@ -635,8 +672,7 @@ var GunBasic = {
         }
     },
 
-
-renderCheckbox: function(component) {
+    renderCheckbox: function (component) {
         var checked = component.modifiers && component.modifiers.checked ? 'checked' : '';
         var disabled = component.modifiers && component.modifiers.disabled ? 'disabled' : '';
         var inline = component.modifiers && component.modifiers.inline;
@@ -644,13 +680,40 @@ renderCheckbox: function(component) {
         return '<div class="' + checkboxClass + '"><input class="form-check-input" type="checkbox" name="' + (component.binding || '') + '" id="' + (component.binding || 'checkbox') + '" value="' + (component.value || 'true') + '" ' + checked + ' ' + disabled + '><label class="form-check-label" for="' + (component.binding || 'checkbox') + '">' + (component.label || '') + '</label></div>';
     },
 
-    renderToggle: function(component) {
+    renderToggle: function (component) {
         var checked = component.modifiers && component.modifiers.checked ? 'checked' : '';
         var disabled = component.modifiers && component.modifiers.disabled ? 'disabled' : '';
         return '<div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" name="' + (component.binding || '') + '" id="' + (component.binding || 'toggle') + '" ' + checked + ' ' + disabled + '><label class="form-check-label" for="' + (component.binding || 'toggle') + '">' + (component.label || '') + '</label></div>';
     },
 
-    renderDropdownMenu: function(component) {
+    // === BUTTON COMPONENT RENDERERS ===
+    renderButton: function (component) {
+        var classes = ['btn'];
+        var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'primary';
+        if (style === 'outline') {
+            classes.push('btn-outline-primary');
+        } else {
+            classes.push('btn-' + style);
+        }
+        if (component.modifiers && component.modifiers.size) {
+            classes.push('btn-' + component.modifiers.size);
+        }
+        var icon = '';
+        if (component.modifiers && component.modifiers.icon === 'plus') {
+            icon = '<i class="bi bi-plus"></i> ';
+        }
+        var onclick = '';
+        if (component.action) {
+            if (typeof component.action === 'string') {
+                onclick = 'onclick="' + component.action + '()"';
+            } else {
+                onclick = 'onclick="(' + component.action + ')()"';
+            }
+        }
+        return '<button class="' + classes.join(' ') + '" ' + onclick + '>' + icon + (component.label || '') + '</button>';
+    },
+
+    renderDropdownMenu: function (component) {
         if (!component.items || component.items.length === 0) {
             return '<div class="text-muted">No menu items</div>';
         }
@@ -672,7 +735,97 @@ renderCheckbox: function(component) {
         return '<div class="dropdown"><button class="btn btn-' + buttonStyle + buttonSize + ' dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">' + (component.label || 'Menu') + '</button><ul class="dropdown-menu">' + menuItems.join('') + '</ul></div>';
     },
 
-    renderPagination: function(component) {
+    // === CONTAINER COMPONENT RENDERERS ===
+    renderCard: function (component) {
+        // Only show header if it's a string, not a function
+        var header = '';
+        if (component.header && typeof component.header === 'string') {
+            header = '<div class="card-header">' + component.header + '</div>';
+        }
+
+        // Only show footer if it's a string, not a function  
+        var footer = '';
+        if (component.footer && typeof component.footer === 'string') {
+            footer = '<div class="card-footer">' + component.footer + '</div>';
+        }
+
+        var body = '';
+        if (component.children) {
+            var childrenHTML = '';
+            for (var i = 0; i < component.children.length; i++) {
+                childrenHTML += this.renderUIComponent(component.children[i]);
+            }
+            body = '<div class="card-body">' + childrenHTML + '</div>';
+        } else if (component.content) {
+            body = '<div class="card-body">' + component.content + '</div>';
+        } else {
+            // Default empty body if no content
+            body = '<div class="card-body"></div>';
+        }
+
+        var classes = ['card'];
+        if (component.modifiers && component.modifiers.border) {
+            classes.push('border-' + component.modifiers.border);
+        }
+        if (component.modifiers && component.modifiers.textAlign) {
+            classes.push('text-' + component.modifiers.textAlign);
+        }
+
+        return '<div class="' + classes.join(' ') + '">' + header + body + footer + '</div>';
+    },
+
+    renderAlert: function (component) {
+        var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'info';
+        var dismissible = component.modifiers && component.modifiers.dismissible;
+        var alertClass = 'alert alert-' + style;
+        if (dismissible) {
+            alertClass += ' alert-dismissible fade show';
+        }
+        var closeButton = dismissible ? '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' : '';
+        return '<div class="' + alertClass + '" role="alert">' + (component.content || '') + closeButton + '</div>';
+    },
+
+    renderModal: function (component) {
+        var size = component.modifiers && component.modifiers.size ? ' modal-' + component.modifiers.size : '';
+        var centered = component.modifiers && component.modifiers.centered ? ' modal-dialog-centered' : '';
+        var scrollable = component.modifiers && component.modifiers.scrollable ? ' modal-dialog-scrollable' : '';
+        var header = component.title ? '<div class="modal-header"><h1 class="modal-title fs-5">' + component.title + '</h1><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>' : '';
+        var footer = '';
+        if (component.actions) {
+            var actionsHTML = '';
+            for (var i = 0; i < component.actions.length; i++) {
+                actionsHTML += this.renderUIComponent(component.actions[i]);
+            }
+            footer = '<div class="modal-footer">' + actionsHTML + '</div>';
+        }
+        var body = '';
+        if (component.children) {
+            var childrenHTML = '';
+            for (var i = 0; i < component.children.length; i++) {
+                childrenHTML += this.renderUIComponent(component.children[i]);
+            }
+            body = '<div class="modal-body">' + childrenHTML + '</div>';
+        } else {
+            body = '<div class="modal-body">' + (component.content || '') + '</div>';
+        }
+        return '<div class="modal fade" id="' + (component.id || 'modal') + '" tabindex="-1" aria-hidden="true"><div class="modal-dialog' + size + centered + scrollable + '"><div class="modal-content">' + header + body + footer + '</div></div></div>';
+    },
+
+    // === DATA COMPONENT RENDERERS ===
+    renderList: function (component) {
+        if (!component.data || component.data.length === 0) {
+            return '<div class="text-muted">No items found</div>';
+        }
+        var listItems = [];
+        for (var i = 0; i < component.data.length; i++) {
+            var item = component.data[i];
+            var itemComponent = component.itemBuilder ? component.itemBuilder(item) : { type: 'Text', content: JSON.stringify(item) };
+            listItems.push('<div class="list-group-item border-0">' + this.renderUIComponent(itemComponent) + '</div>');
+        }
+        return '<div class="list-group list-group-flush">' + listItems.join('') + '</div>';
+    },
+
+    renderPagination: function (component) {
         var currentPage = component.currentPage || 1;
         var totalPages = component.totalPages || 1;
         var size = component.modifiers && component.modifiers.size ? ' pagination-' + component.modifiers.size : '';
@@ -713,92 +866,8 @@ renderCheckbox: function(component) {
         return '<nav aria-label="Pagination"><ul class="pagination' + size + '">' + items.join('') + '</ul></nav>';
     },
 
-    renderList: function(component) {
-        if (!component.data || component.data.length === 0) {
-            return '<div class="text-muted">No items found</div>';
-        }
-        var listItems = [];
-        for (var i = 0; i < component.data.length; i++) {
-            var item = component.data[i];
-            var itemComponent = component.itemBuilder ? component.itemBuilder(item) : { type: 'Text', content: JSON.stringify(item) };
-            listItems.push('<div class="list-group-item border-0">' + this.renderUIComponent(itemComponent) + '</div>');
-        }
-        return '<div class="list-group list-group-flush">' + listItems.join('') + '</div>';
-    },
-
-    renderBadge: function(component) {
-        var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'primary';
-        var pill = component.modifiers && component.modifiers.pill ? ' rounded-pill' : '';
-        return '<span class="badge bg-' + style + pill + '">' + (component.content || '') + '</span>';
-    },
-
-    renderAlert: function(component) {
-        var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'info';
-        var dismissible = component.modifiers && component.modifiers.dismissible;
-        var alertClass = 'alert alert-' + style;
-        if (dismissible) {
-            alertClass += ' alert-dismissible fade show';
-        }
-        var closeButton = dismissible ? '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' : '';
-        return '<div class="' + alertClass + '" role="alert">' + (component.content || '') + closeButton + '</div>';
-    },
-
-    renderCard: function(component) {
-        var header = component.header ? '<div class="card-header">' + component.header + '</div>' : '';
-        var footer = component.footer ? '<div class="card-footer">' + component.footer + '</div>' : '';
-        var body = '';
-        if (component.children) {
-            var childrenHTML = '';
-            for (var i = 0; i < component.children.length; i++) {
-                childrenHTML += this.renderUIComponent(component.children[i]);
-            }
-            body = '<div class="card-body">' + childrenHTML + '</div>';
-        } else {
-            body = '<div class="card-body">' + (component.content || '') + '</div>';
-        }
-        var classes = ['card'];
-        if (component.modifiers && component.modifiers.border) {
-            classes.push('border-' + component.modifiers.border);
-        }
-        if (component.modifiers && component.modifiers.textAlign) {
-            classes.push('text-' + component.modifiers.textAlign);
-        }
-        return '<div class="' + classes.join(' ') + '">' + header + body + footer + '</div>';
-    },
-
-    renderModal: function(component) {
-        var size = component.modifiers && component.modifiers.size ? ' modal-' + component.modifiers.size : '';
-        var centered = component.modifiers && component.modifiers.centered ? ' modal-dialog-centered' : '';
-        var scrollable = component.modifiers && component.modifiers.scrollable ? ' modal-dialog-scrollable' : '';
-        var header = component.title ? '<div class="modal-header"><h1 class="modal-title fs-5">' + component.title + '</h1><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>' : '';
-        var footer = '';
-        if (component.actions) {
-            var actionsHTML = '';
-            for (var i = 0; i < component.actions.length; i++) {
-                actionsHTML += this.renderUIComponent(component.actions[i]);
-            }
-            footer = '<div class="modal-footer">' + actionsHTML + '</div>';
-        }
-        var body = '';
-        if (component.children) {
-            var childrenHTML = '';
-            for (var i = 0; i < component.children.length; i++) {
-                childrenHTML += this.renderUIComponent(component.children[i]);
-            }
-            body = '<div class="modal-body">' + childrenHTML + '</div>';
-        } else {
-            body = '<div class="modal-body">' + (component.content || '') + '</div>';
-        }
-        return '<div class="modal fade" id="' + (component.id || 'modal') + '" tabindex="-1" aria-hidden="true"><div class="modal-dialog' + size + centered + scrollable + '"><div class="modal-content">' + header + body + footer + '</div></div></div>';
-    },
-
-    renderSpacer: function(component) {
-        return '<div class="flex-grow-1"></div>';
-    },
-
-    // Utility functions
-    // TODO - Havnt passed all the test.
-    getPaddingClasses: function(padding) {
+    // === UTILITY FUNCTIONS ===
+    getPaddingClasses: function (padding) {
         var classes = [];
         for (var direction in padding) {
             if (padding.hasOwnProperty(direction)) {
@@ -819,12 +888,15 @@ renderCheckbox: function(component) {
         return classes;
     },
 
-    // UI component creator functions
 
-    // Avoid VStack for now if you want perfect Vertical Responsive design.
-    createVStack: function(children) {
-        var component = { type: 'VStack', children: children, modifiers: {} };
-        component.padding = function(direction, value) {
+    // === UI COMPONENT CREATOR FUNCTIONS ===
+    createVStack: function (children) {
+        var component = {
+            componentType: 'VStack',
+            children: children,
+            modifiers: {}
+        };
+        component.padding = function (direction, value) {
             if (!this.modifiers.padding) this.modifiers.padding = {};
             this.modifiers.padding[direction] = value;
             return this;
@@ -832,13 +904,17 @@ renderCheckbox: function(component) {
         return component;
     },
 
-    createHStack: function(children) {
-        var component = { type: 'HStack', children: children, modifiers: {} };
-        component.justify = function(alignment) {
+    createHStack: function (children) {
+        var component = {
+            componentType: 'HStack',
+            children: children,
+            modifiers: {}
+        };
+        component.justify = function (alignment) {
             this.modifiers.justify = alignment;
             return this;
         };
-        component.padding = function(direction, value) {
+        component.padding = function (direction, value) {
             if (!this.modifiers.padding) this.modifiers.padding = {};
             this.modifiers.padding[direction] = value;
             return this;
@@ -846,17 +922,28 @@ renderCheckbox: function(component) {
         return component;
     },
 
-    createText: function(content) {
-        var component = { type: 'Text', content: content, modifiers: {} };
-        component.font = function(size) {
+    createSpacer: function () {
+        return {
+            componentType: 'Spacer',
+            modifiers: {}
+        };
+    },
+
+    createText: function (content) {
+        var component = {
+            componentType: 'Text',
+            content: content,
+            modifiers: {}
+        };
+        component.font = function (size) {
             this.modifiers.font = size;
             return this;
         };
-        component.color = function(color) {
+        component.color = function (color) {
             this.modifiers.color = color;
             return this;
         };
-        component.padding = function(direction, value) {
+        component.padding = function (direction, value) {
             if (!this.modifiers.padding) this.modifiers.padding = {};
             this.modifiers.padding[direction] = value;
             return this;
@@ -864,264 +951,337 @@ renderCheckbox: function(component) {
         return component;
     },
 
-    createTextField: function(label, binding) {
-        var component = { type: 'TextField', label: label, binding: binding, modifiers: {} };
-        component.required = function(required) {
-            this.modifiers.required = required;
-            return this;
+    createBadge: function (content) {
+        var component = {
+            componentType: 'Badge',
+            content: content,
+            modifiers: {}
         };
-        component.placeholder = function(text) {
-            this.modifiers.placeholder = text;
-            return this;
-        };
-        component.type = function(type) {
-            this.modifiers.type = type;
-            return this;
-        };
-        component.value = function(value) {
-            this.modifiers.value = value;
-            return this;
-        };
-        return component;
-    },
-
-    createTextArea: function(label, binding) {
-        var component = { type: 'TextArea', label: label, binding: binding, modifiers: {} };
-        component.required = function(required) {
-            this.modifiers.required = required;
-            return this;
-        };
-        component.placeholder = function(text) {
-            this.modifiers.placeholder = text;
-            return this;
-        };
-        component.rows = function(rows) {
-            this.modifiers.rows = rows;
-            return this;
-        };
-        component.value = function(value) {
-            this.modifiers.value = value;
-            return this;
-        };
-        return component;
-    },
-
-    createButton: function(label, action) {
-        var component = { type: 'Button', label: label, action: action, modifiers: {} };
-        component.style = function(style) {
+        component.style = function (style) {
             this.modifiers.style = style;
             return this;
         };
-        component.size = function(size) {
-            this.modifiers.size = size;
-            return this;
-        };
-        component.icon = function(icon) {
-            this.modifiers.icon = icon;
-            return this;
-        };
-        return component;
-    },
-
-    createRadioGroup: function(label, binding, options) {
-        var component = { type: 'RadioGroup', label: label, binding: binding, options: options || [], modifiers: {} };
-        component.inline = function(inline) {
-            this.modifiers.inline = inline;
-            return this;
-        };
-        component.value = function(value) {
-            this.modifiers.value = value;
-            return this;
-        };
-        return component;
-    },
-
-    createSelect: function(label, binding, options) {
-        var component = { type: 'Select', label: label, binding: binding, options: options || [], modifiers: {} };
-        component.required = function(required) {
-            this.modifiers.required = required;
-            return this;
-        };
-        component.placeholder = function(text) {
-            this.modifiers.placeholder = text;
-            return this;
-        };
-        component.multiple = function(multiple) {
-            this.modifiers.multiple = multiple;
-            return this;
-        };
-        component.size = function(size) {
-            this.modifiers.size = size;
-            return this;
-        };
-        component.value = function(value) {
-            this.modifiers.value = value;
-            return this;
-        };
-        component.disabled = function(disabled) {
-            this.modifiers.disabled = disabled;
-            return this;
-        };
-        return component;
-    },
-
-    createDropdownMenu: function(label, items) {
-        var component = { type: 'DropdownMenu', label: label, items: items || [], modifiers: {} };
-        component.style = function(style) {
-            this.modifiers.style = style;
-            return this;
-        };
-        component.size = function(size) {
-            this.modifiers.size = size;
-            return this;
-        };
-        return component;
-    },
-
-    createPagination: function(currentPage, totalPages, onPageChange) {
-        var component = { 
-            type: 'Pagination', 
-            currentPage: currentPage || 1, 
-            totalPages: totalPages || 1,
-            onPageChange: onPageChange,
-            modifiers: {} 
-        };
-        component.size = function(size) {
-            this.modifiers.size = size;
-            return this;
-        };
-        component.maxVisible = function(max) {
-            this.modifiers.maxVisible = max;
-            return this;
-        };
-        component.showFirst = function(show) {
-            this.modifiers.showFirst = show;
-            return this;
-        };
-        component.showLast = function(show) {
-            this.modifiers.showLast = show;
-            return this;
-        };
-        return component;
-    },
-
-    createCheckbox: function(label, binding, value) {
-        var component = { type: 'Checkbox', label: label, binding: binding, value: value, modifiers: {} };
-        component.checked = function(checked) {
-            this.modifiers.checked = checked;
-            return this;
-        };
-        component.disabled = function(disabled) {
-            this.modifiers.disabled = disabled;
-            return this;
-        };
-        component.inline = function(inline) {
-            this.modifiers.inline = inline;
-            return this;
-        };
-        return component;
-    },
-
-    createToggle: function(label, binding) {
-        var component = { type: 'Toggle', label: label, binding: binding, modifiers: {} };
-        component.checked = function(checked) {
-            this.modifiers.checked = checked;
-            return this;
-        };
-        component.disabled = function(disabled) {
-            this.modifiers.disabled = disabled;
-            return this;
-        };
-        return component;
-    },
-
-    createBadge: function(content) {
-        var component = { type: 'Badge', content: content, modifiers: {} };
-        component.style = function(style) {
-            this.modifiers.style = style;
-            return this;
-        };
-        component.pill = function(pill) {
+        component.pill = function (pill) {
             this.modifiers.pill = pill;
             return this;
         };
         return component;
     },
 
-    createAlert: function(content) {
-        var component = { type: 'Alert', content: content, modifiers: {} };
-        component.style = function(style) {
+    createTextField: function (label, binding) {
+        var component = {
+            componentType: 'TextField',
+            label: label,
+            binding: binding,
+            modifiers: {}
+        };
+
+        component.required = function (required) {
+            this.modifiers.required = required;
+            return this;
+        };
+
+        component.placeholder = function (text) {
+            this.modifiers.placeholder = text;
+            return this;
+        };
+
+        component.type = function (type) {
+            this.modifiers.type = type;
+            return this;
+        };
+
+        component.value = function (value) {
+            this.modifiers.value = value;
+            return this;
+        };
+
+        return component;
+    },
+
+    createTextArea: function (label, binding) {
+        var component = {
+            componentType: 'TextArea',
+            label: label,
+            binding: binding,
+            modifiers: {}
+        };
+
+        component.required = function (required) {
+            this.modifiers.required = required;
+            return this;
+        };
+
+        component.placeholder = function (text) {
+            this.modifiers.placeholder = text;
+            return this;
+        };
+
+        component.rows = function (rows) {
+            this.modifiers.rows = rows;
+            return this;
+        };
+
+        component.value = function (value) {
+            this.modifiers.value = value;
+            return this;
+        };
+
+        return component;
+    },
+
+    createRadioGroup: function (label, binding, options) {
+        var component = {
+            componentType: 'RadioGroup',
+            label: label,
+            binding: binding,
+            options: options || [],
+            modifiers: {}
+        };
+        component.inline = function (inline) {
+            this.modifiers.inline = inline;
+            return this;
+        };
+        component.value = function (value) {
+            this.modifiers.value = value;
+            return this;
+        };
+        return component;
+    },
+
+    createSelect: function (label, binding, options) {
+        var component = {
+            componentType: 'Select',
+            label: label,
+            binding: binding,
+            options: options || [],
+            modifiers: {}
+        };
+        component.required = function (required) {
+            this.modifiers.required = required;
+            return this;
+        };
+        component.placeholder = function (text) {
+            this.modifiers.placeholder = text;
+            return this;
+        };
+        component.multiple = function (multiple) {
+            this.modifiers.multiple = multiple;
+            return this;
+        };
+        component.size = function (size) {
+            this.modifiers.size = size;
+            return this;
+        };
+        component.value = function (value) {
+            this.modifiers.value = value;
+            return this;
+        };
+        component.disabled = function (disabled) {
+            this.modifiers.disabled = disabled;
+            return this;
+        };
+        return component;
+    },
+
+    createCheckbox: function (label, binding, value) {
+        var component = {
+            componentType: 'Checkbox',
+            label: label,
+            binding: binding,
+            value: value,
+            modifiers: {}
+        };
+        component.checked = function (checked) {
+            this.modifiers.checked = checked;
+            return this;
+        };
+        component.disabled = function (disabled) {
+            this.modifiers.disabled = disabled;
+            return this;
+        };
+        component.inline = function (inline) {
+            this.modifiers.inline = inline;
+            return this;
+        };
+        return component;
+    },
+
+    createToggle: function (label, binding) {
+        var component = {
+            componentType: 'Toggle',
+            label: label,
+            binding: binding,
+            modifiers: {}
+        };
+        component.checked = function (checked) {
+            this.modifiers.checked = checked;
+            return this;
+        };
+        component.disabled = function (disabled) {
+            this.modifiers.disabled = disabled;
+            return this;
+        };
+        return component;
+    },
+
+    createButton: function (label, action) {
+        var component = {
+            componentType: 'Button',
+            label: label,
+            action: action,
+            modifiers: {}
+        };
+        component.style = function (style) {
             this.modifiers.style = style;
             return this;
         };
-        component.dismissible = function(dismissible) {
+        component.size = function (size) {
+            this.modifiers.size = size;
+            return this;
+        };
+        component.icon = function (icon) {
+            this.modifiers.icon = icon;
+            return this;
+        };
+        return component;
+    },
+
+    createDropdownMenu: function (label, items) {
+        var component = {
+            componentType: 'DropdownMenu',
+            label: label,
+            items: items || [],
+            modifiers: {}
+        };
+        component.style = function (style) {
+            this.modifiers.style = style;
+            return this;
+        };
+        component.size = function (size) {
+            this.modifiers.size = size;
+            return this;
+        };
+        return component;
+    },
+
+    createCard: function (content) {
+        var component = {
+            componentType: 'Card',
+            content: content,
+            modifiers: {}
+        };
+        component.header = function (header) {
+            this.header = header;
+            return this;
+        };
+        component.footer = function (footer) {
+            this.footer = footer;
+            return this;
+        };
+        component.border = function (border) {
+            this.modifiers.border = border;
+            return this;
+        };
+        component.textAlign = function (align) {
+            this.modifiers.textAlign = align;
+            return this;
+        };
+        component.children = function (children) {
+            this.children = children;
+            return this;
+        };
+        return component;
+    },
+
+    createAlert: function (content) {
+        var component = {
+            componentType: 'Alert',
+            content: content,
+            modifiers: {}
+        };
+        component.style = function (style) {
+            this.modifiers.style = style;
+            return this;
+        };
+        component.dismissible = function (dismissible) {
             this.modifiers.dismissible = dismissible;
             return this;
         };
         return component;
     },
 
-    createCard: function(content) {
-        var component = { type: 'Card', content: content, modifiers: {} };
-        component.header = function(header) {
-            this.header = header;
-            return this;
+    createModal: function (id, title, content) {
+        var component = {
+            componentType: 'Modal',
+            id: id,
+            title: title,
+            content: content,
+            modifiers: {}
         };
-        component.footer = function(footer) {
-            this.footer = footer;
-            return this;
-        };
-        component.border = function(border) {
-            this.modifiers.border = border;
-            return this;
-        };
-        component.textAlign = function(align) {
-            this.modifiers.textAlign = align;
-            return this;
-        };
-        component.children = function(children) {
-            this.children = children;
-            return this;
-        };
-        return component;
-    },
-
-    createModal: function(id, title, content) {
-        var component = { type: 'Modal', id: id, title: title, content: content, modifiers: {} };
-        component.size = function(size) {
+        component.size = function (size) {
             this.modifiers.size = size;
             return this;
         };
-        component.centered = function(centered) {
+        component.centered = function (centered) {
             this.modifiers.centered = centered;
             return this;
         };
-        component.scrollable = function(scrollable) {
+        component.scrollable = function (scrollable) {
             this.modifiers.scrollable = scrollable;
             return this;
         };
-        component.actions = function(actions) {
+        component.actions = function (actions) {
             this.actions = actions;
             return this;
         };
-        component.children = function(children) {
+        component.children = function (children) {
             this.children = children;
             return this;
         };
         return component;
     },
 
-    createList: function(data, keyPath, itemBuilder) {
-        return { type: 'List', data: data, keyPath: keyPath, itemBuilder: itemBuilder, modifiers: {} };
+    createList: function (data, keyPath, itemBuilder) {
+        return {
+            componentType: 'List',
+            data: data,
+            keyPath: keyPath,
+            itemBuilder: itemBuilder,
+            modifiers: {}
+        };
     },
 
-    createSpacer: function() {
-        return { type: 'Spacer', modifiers: {} };
+    createPagination: function (currentPage, totalPages, onPageChange) {
+        var component = {
+            componentType: 'Pagination',
+            currentPage: currentPage || 1,
+            totalPages: totalPages || 1,
+            onPageChange: onPageChange,
+            modifiers: {}
+        };
+        component.size = function (size) {
+            this.modifiers.size = size;
+            return this;
+        };
+        component.maxVisible = function (max) {
+            this.modifiers.maxVisible = max;
+            return this;
+        };
+        component.showFirst = function (show) {
+            this.modifiers.showFirst = show;
+            return this;
+        };
+        component.showLast = function (show) {
+            this.modifiers.showLast = show;
+            return this;
+        };
+        return component;
     }
 
 }; // End of GunBasic object
 
-// Global API functions
+// === GLOBAL API FUNCTIONS ===
 function loadTemplate(apiUrl, templateId, targetId, onComplete) {
     return GunBasic.loadTemplate(apiUrl, templateId, targetId, onComplete);
 }
@@ -1142,7 +1302,7 @@ function toggleElement(elementId) {
     return GunBasic.toggleElement(elementId);
 }
 
-// Global UI component creator functions
+// === GLOBAL UI COMPONENT CREATOR FUNCTIONS ===
 function VStack(children) {
     return GunBasic.createVStack(children);
 }
@@ -1151,8 +1311,16 @@ function HStack(children) {
     return GunBasic.createHStack(children);
 }
 
+function Spacer() {
+    return GunBasic.createSpacer();
+}
+
 function Text(content) {
     return GunBasic.createText(content);
+}
+
+function Badge(content) {
+    return GunBasic.createBadge(content);
 }
 
 function TextField(label, binding) {
@@ -1163,24 +1331,12 @@ function TextArea(label, binding) {
     return GunBasic.createTextArea(label, binding);
 }
 
-function Button(label, action) {
-    return GunBasic.createButton(label, action);
-}
-
 function RadioGroup(label, binding, options) {
     return GunBasic.createRadioGroup(label, binding, options);
 }
 
 function Select(label, binding, options) {
     return GunBasic.createSelect(label, binding, options);
-}
-
-function DropdownMenu(label, items) {
-    return GunBasic.createDropdownMenu(label, items);
-}
-
-function Pagination(currentPage, totalPages, onPageChange) {
-    return GunBasic.createPagination(currentPage, totalPages, onPageChange);
 }
 
 function Checkbox(label, binding, value) {
@@ -1191,16 +1347,20 @@ function Toggle(label, binding) {
     return GunBasic.createToggle(label, binding);
 }
 
-function Badge(content) {
-    return GunBasic.createBadge(content);
+function Button(label, action) {
+    return GunBasic.createButton(label, action);
 }
 
-function Alert(content) {
-    return GunBasic.createAlert(content);
+function DropdownMenu(label, items) {
+    return GunBasic.createDropdownMenu(label, items);
 }
 
 function Card(content) {
     return GunBasic.createCard(content);
+}
+
+function Alert(content) {
+    return GunBasic.createAlert(content);
 }
 
 function Modal(id, title, content) {
@@ -1211,7 +1371,28 @@ function List(data, keyPath, itemBuilder) {
     return GunBasic.createList(data, keyPath, itemBuilder);
 }
 
-function Spacer() {
-    return GunBasic.createSpacer();
+function Pagination(currentPage, totalPages, onPageChange) {
+    return GunBasic.createPagination(currentPage, totalPages, onPageChange);
 }
+
+// Ensure global functions are available on window object
+window.VStack = VStack;
+window.HStack = HStack;
+window.Spacer = Spacer;
+window.Text = Text;
+window.Badge = Badge;
+window.TextField = TextField;
+window.TextArea = TextArea;
+window.RadioGroup = RadioGroup;
+window.Select = Select;
+window.Checkbox = Checkbox;
+window.Toggle = Toggle;
+window.Button = Button;
+window.DropdownMenu = DropdownMenu;
+window.Card = Card;
+window.Alert = Alert;
+window.Modal = Modal;
+window.List = List;
+window.Pagination = Pagination;
+
 
