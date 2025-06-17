@@ -1,9 +1,9 @@
 /*
-    @Project:	GunBasic-JS 3.6 - COMPLETE IMPLEMENTATION
+    @Project:	GunBasic-JS 3.6.1 - COMPLETE IMPLEMENTATION WITH SWIFTUI PADDING & SPACING
     @Website:	Updated from original http://code.google.com/p/gunbasic-js/
     @Author: 	Gunesh Raj
     @Email: 	gunesh.raj@gmail.com
-    @Version: 	3.6
+    @Version: 	3.6.1
     @License: 	GNU General Public License v2
     @Notes: 	Adding in new functions in the framework with ALL UI components implemented.
 */
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 var GunBasic = {
-    version: "3.6.0",
+    version: "3.6.1",
     debugMode: false,
 
     // === INITIALIZATION SYSTEM ===
@@ -190,7 +190,7 @@ var GunBasic = {
         };
     },
 
-    // === ASP TEMPLATING SYSTEM ===
+// === ASP TEMPLATING SYSTEM ===
     parseASPTagsWithData: function (content, jsonData) {
         var self = this;
         try {
@@ -365,7 +365,7 @@ var GunBasic = {
         });
     },
 
-    // UI processor integration
+// UI processor integration
     // Dont modify this code. Its pretty bad. I will implement a plug in framework. Maybe by next year.
     processUI: function (uiCode, jsonData) {
         if (typeof jsonData === 'undefined') {
@@ -499,15 +499,49 @@ var GunBasic = {
         }
     },
 
-    // === LAYOUT COMPONENT RENDERERS ===
+    // === ENHANCED UTILITY FUNCTIONS ===
+    getPaddingClasses: function (padding) {
+        var classes = [];
+        for (var direction in padding) {
+            if (padding.hasOwnProperty(direction)) {
+                var value = padding[direction];
+                if (direction === 'all') {
+                    classes.push('p-' + value);
+                } else if (direction === 'top') {
+                    classes.push('pt-' + value);
+                } else if (direction === 'bottom') {
+                    classes.push('pb-' + value);
+                } else if (direction === 'left' || direction === 'leading') {
+                    classes.push('ps-' + value);  // Bootstrap 5 uses 'ps' for start
+                } else if (direction === 'right' || direction === 'trailing') {
+                    classes.push('pe-' + value);  // Bootstrap 5 uses 'pe' for end
+                } else if (direction === 'vertical') {
+                    classes.push('py-' + value);
+                } else if (direction === 'horizontal') {
+                    classes.push('px-' + value);
+                }
+            }
+        }
+        return classes;
+    },
+
+// === ENHANCED LAYOUT COMPONENT RENDERERS ===
     renderVStack: function (component) {
         var classes = ['d-flex', 'flex-column'];
+        
+        // Add spacing between children
+        if (component.spacing) {
+            classes.push('gap-' + component.spacing);
+        }
+        
+        // Add padding classes
         if (component.modifiers && component.modifiers.padding) {
             var paddingClasses = this.getPaddingClasses(component.modifiers.padding);
             for (var i = 0; i < paddingClasses.length; i++) {
                 classes.push(paddingClasses[i]);
             }
         }
+        
         var childrenHTML = '';
         if (component.children) {
             for (var i = 0; i < component.children.length; i++) {
@@ -519,6 +553,13 @@ var GunBasic = {
 
     renderHStack: function (component) {
         var classes = ['d-flex', 'flex-row'];
+        
+        // Add spacing between children
+        if (component.spacing) {
+            classes.push('gap-' + component.spacing);
+        }
+        
+        // Add justify content and padding
         if (component.modifiers) {
             if (component.modifiers.justify === 'end') {
                 classes.push('justify-content-end');
@@ -527,6 +568,8 @@ var GunBasic = {
             } else if (component.modifiers.justify === 'between') {
                 classes.push('justify-content-between');
             }
+            
+            // Add padding classes
             if (component.modifiers.padding) {
                 var paddingClasses = this.getPaddingClasses(component.modifiers.padding);
                 for (var i = 0; i < paddingClasses.length; i++) {
@@ -534,6 +577,7 @@ var GunBasic = {
                 }
             }
         }
+        
         var childrenHTML = '';
         if (component.children) {
             for (var i = 0; i < component.children.length; i++) {
@@ -573,12 +617,27 @@ var GunBasic = {
     },
 
     renderBadge: function (component) {
+        var classes = ['badge'];
         var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'primary';
+        classes.push('bg-' + style);
+        
         var pill = component.modifiers && component.modifiers.pill ? ' rounded-pill' : '';
-        return '<span class="badge bg-' + style + pill + '">' + (component.content || '') + '</span>';
+        if (pill) {
+            classes.push('rounded-pill');
+        }
+        
+        // Add padding classes
+        if (component.modifiers && component.modifiers.padding) {
+            var paddingClasses = this.getPaddingClasses(component.modifiers.padding);
+            for (var i = 0; i < paddingClasses.length; i++) {
+                classes.push(paddingClasses[i]);
+            }
+        }
+        
+        return '<span class="' + classes.join(' ') + '">' + (component.content || '') + '</span>';
     },
 
-    // === FORM COMPONENT RENDERERS ===
+    // === ENHANCED FORM COMPONENT RENDERERS ===
     renderTextField: function (component) {
         var classes = ['form-control'];
         var attributes = [];
@@ -589,10 +648,27 @@ var GunBasic = {
             var inputType = component.modifiers.type || 'text';
             attributes.push('type="' + inputType + '"');
         }
+        
+        var wrapperClasses = ['mb-3'];
+        // Add padding classes to wrapper
+        if (component.modifiers && component.modifiers.padding) {
+            var paddingClasses = this.getPaddingClasses(component.modifiers.padding);
+            for (var i = 0; i < paddingClasses.length; i++) {
+                wrapperClasses.push(paddingClasses[i]);
+            }
+        }
+        
         if (component.label) {
             var required = component.modifiers && component.modifiers.required;
-            return '<div class="mb-3"><label class="form-label">' + component.label + (required ? ' <span class="text-danger">*</span>' : '') + '</label><input class="' + classes.join(' ') + '" name="' + (component.binding || '') + '" ' + attributes.join(' ') + '></div>';
+            return '<div class="' + wrapperClasses.join(' ') + '"><label class="form-label">' + component.label + (required ? ' <span class="text-danger">*</span>' : '') + '</label><input class="' + classes.join(' ') + '" name="' + (component.binding || '') + '" ' + attributes.join(' ') + '></div>';
         } else {
+            // For standalone input, apply padding directly
+            if (component.modifiers && component.modifiers.padding) {
+                var paddingClasses = this.getPaddingClasses(component.modifiers.padding);
+                for (var i = 0; i < paddingClasses.length; i++) {
+                    classes.push(paddingClasses[i]);
+                }
+            }
             return '<input class="' + classes.join(' ') + '" name="' + (component.binding || '') + '" ' + attributes.join(' ') + '>';
         }
     },
@@ -606,15 +682,32 @@ var GunBasic = {
             if (component.modifiers.rows) attributes.push('rows="' + component.modifiers.rows + '"');
         }
         var value = component.modifiers && component.modifiers.value ? component.modifiers.value : '';
+        
+        var wrapperClasses = ['mb-3'];
+        // Add padding classes to wrapper
+        if (component.modifiers && component.modifiers.padding) {
+            var paddingClasses = this.getPaddingClasses(component.modifiers.padding);
+            for (var i = 0; i < paddingClasses.length; i++) {
+                wrapperClasses.push(paddingClasses[i]);
+            }
+        }
+        
         if (component.label) {
             var required = component.modifiers && component.modifiers.required;
-            return '<div class="mb-3"><label class="form-label">' + component.label + (required ? ' <span class="text-danger">*</span>' : '') + '</label><textarea class="' + classes.join(' ') + '" name="' + (component.binding || '') + '" ' + attributes.join(' ') + '>' + value + '</textarea></div>';
+            return '<div class="' + wrapperClasses.join(' ') + '"><label class="form-label">' + component.label + (required ? ' <span class="text-danger">*</span>' : '') + '</label><textarea class="' + classes.join(' ') + '" name="' + (component.binding || '') + '" ' + attributes.join(' ') + '>' + value + '</textarea></div>';
         } else {
+            // For standalone textarea, apply padding directly
+            if (component.modifiers && component.modifiers.padding) {
+                var paddingClasses = this.getPaddingClasses(component.modifiers.padding);
+                for (var i = 0; i < paddingClasses.length; i++) {
+                    classes.push(paddingClasses[i]);
+                }
+            }
             return '<textarea class="' + classes.join(' ') + '" name="' + (component.binding || '') + '" ' + attributes.join(' ') + '>' + value + '</textarea>';
         }
     },
 
-    renderRadioGroup: function (component) {
+ renderRadioGroup: function (component) {
         if (!component.options || component.options.length === 0) {
             return '<div class="text-muted">No options available</div>';
         }
@@ -686,7 +779,7 @@ var GunBasic = {
         return '<div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" name="' + (component.binding || '') + '" id="' + (component.binding || 'toggle') + '" ' + checked + ' ' + disabled + '><label class="form-check-label" for="' + (component.binding || 'toggle') + '">' + (component.label || '') + '</label></div>';
     },
 
-    // === BUTTON COMPONENT RENDERERS ===
+    // === ENHANCED BUTTON COMPONENT RENDERER ===
     renderButton: function (component) {
         var classes = ['btn'];
         var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'primary';
@@ -698,6 +791,15 @@ var GunBasic = {
         if (component.modifiers && component.modifiers.size) {
             classes.push('btn-' + component.modifiers.size);
         }
+        
+        // Add padding classes
+        if (component.modifiers && component.modifiers.padding) {
+            var paddingClasses = this.getPaddingClasses(component.modifiers.padding);
+            for (var i = 0; i < paddingClasses.length; i++) {
+                classes.push(paddingClasses[i]);
+            }
+        }
+        
         var icon = '';
         if (component.modifiers && component.modifiers.icon === 'plus') {
             icon = '<i class="bi bi-plus"></i> ';
@@ -734,8 +836,8 @@ var GunBasic = {
         }
         return '<div class="dropdown"><button class="btn btn-' + buttonStyle + buttonSize + ' dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">' + (component.label || 'Menu') + '</button><ul class="dropdown-menu">' + menuItems.join('') + '</ul></div>';
     },
-
-    // === CONTAINER COMPONENT RENDERERS ===
+    
+ // === CONTAINER COMPONENT RENDERERS ===
     renderCard: function (component) {
         // Only show header if it's a string, not a function
         var header = '';
@@ -865,60 +967,44 @@ var GunBasic = {
         items.push('<li class="page-item' + nextDisabled + '"><a class="page-link" href="#"' + nextAction + '>Next</a></li>');
         return '<nav aria-label="Pagination"><ul class="pagination' + size + '">' + items.join('') + '</ul></nav>';
     },
-
-    // === UTILITY FUNCTIONS ===
-    getPaddingClasses: function (padding) {
-        var classes = [];
-        for (var direction in padding) {
-            if (padding.hasOwnProperty(direction)) {
-                var value = padding[direction];
-                if (direction === 'all') {
-                    classes.push('p-' + value);
-                } else if (direction === 'top') {
-                    classes.push('pt-' + value);
-                } else if (direction === 'bottom') {
-                    classes.push('pb-' + value);
-                } else if (direction === 'vertical') {
-                    classes.push('py-' + value);
-                } else if (direction === 'horizontal') {
-                    classes.push('px-' + value);
-                }
-            }
-        }
-        return classes;
-    },
-
-
-    // === UI COMPONENT CREATOR FUNCTIONS ===
-    createVStack: function (children) {
+    
+// === ENHANCED UI COMPONENT CREATOR FUNCTIONS ===
+    createVStack: function (children, options) {
         var component = {
             componentType: 'VStack',
             children: children,
-            modifiers: {}
+            modifiers: {},
+            spacing: options && options.spacing ? options.spacing : null
         };
+        
         component.padding = function (direction, value) {
             if (!this.modifiers.padding) this.modifiers.padding = {};
             this.modifiers.padding[direction] = value;
             return this;
         };
+        
         return component;
     },
 
-    createHStack: function (children) {
+    createHStack: function (children, options) {
         var component = {
             componentType: 'HStack',
             children: children,
-            modifiers: {}
+            modifiers: {},
+            spacing: options && options.spacing ? options.spacing : null
         };
+        
         component.justify = function (alignment) {
             this.modifiers.justify = alignment;
             return this;
         };
+        
         component.padding = function (direction, value) {
             if (!this.modifiers.padding) this.modifiers.padding = {};
             this.modifiers.padding[direction] = value;
             return this;
         };
+        
         return component;
     },
 
@@ -935,19 +1021,23 @@ var GunBasic = {
             content: content,
             modifiers: {}
         };
+        
         component.font = function (size) {
             this.modifiers.font = size;
             return this;
         };
+        
         component.color = function (color) {
             this.modifiers.color = color;
             return this;
         };
+        
         component.padding = function (direction, value) {
             if (!this.modifiers.padding) this.modifiers.padding = {};
             this.modifiers.padding[direction] = value;
             return this;
         };
+        
         return component;
     },
 
@@ -957,14 +1047,23 @@ var GunBasic = {
             content: content,
             modifiers: {}
         };
+        
         component.style = function (style) {
             this.modifiers.style = style;
             return this;
         };
+        
         component.pill = function (pill) {
             this.modifiers.pill = pill;
             return this;
         };
+        
+        component.padding = function (direction, value) {
+            if (!this.modifiers.padding) this.modifiers.padding = {};
+            this.modifiers.padding[direction] = value;
+            return this;
+        };
+        
         return component;
     },
 
@@ -993,6 +1092,12 @@ var GunBasic = {
 
         component.value = function (value) {
             this.modifiers.value = value;
+            return this;
+        };
+        
+        component.padding = function (direction, value) {
+            if (!this.modifiers.padding) this.modifiers.padding = {};
+            this.modifiers.padding[direction] = value;
             return this;
         };
 
@@ -1026,6 +1131,12 @@ var GunBasic = {
             this.modifiers.value = value;
             return this;
         };
+        
+        component.padding = function (direction, value) {
+            if (!this.modifiers.padding) this.modifiers.padding = {};
+            this.modifiers.padding[direction] = value;
+            return this;
+        };
 
         return component;
     },
@@ -1038,14 +1149,23 @@ var GunBasic = {
             options: options || [],
             modifiers: {}
         };
+        
         component.inline = function (inline) {
             this.modifiers.inline = inline;
             return this;
         };
+        
         component.value = function (value) {
             this.modifiers.value = value;
             return this;
         };
+        
+        component.padding = function (direction, value) {
+            if (!this.modifiers.padding) this.modifiers.padding = {};
+            this.modifiers.padding[direction] = value;
+            return this;
+        };
+        
         return component;
     },
 
@@ -1057,30 +1177,43 @@ var GunBasic = {
             options: options || [],
             modifiers: {}
         };
+        
         component.required = function (required) {
             this.modifiers.required = required;
             return this;
         };
+        
         component.placeholder = function (text) {
             this.modifiers.placeholder = text;
             return this;
         };
+        
         component.multiple = function (multiple) {
             this.modifiers.multiple = multiple;
             return this;
         };
+        
         component.size = function (size) {
             this.modifiers.size = size;
             return this;
         };
+        
         component.value = function (value) {
             this.modifiers.value = value;
             return this;
         };
+        
         component.disabled = function (disabled) {
             this.modifiers.disabled = disabled;
             return this;
         };
+        
+        component.padding = function (direction, value) {
+            if (!this.modifiers.padding) this.modifiers.padding = {};
+            this.modifiers.padding[direction] = value;
+            return this;
+        };
+        
         return component;
     },
 
@@ -1092,18 +1225,28 @@ var GunBasic = {
             value: value,
             modifiers: {}
         };
+        
         component.checked = function (checked) {
             this.modifiers.checked = checked;
             return this;
         };
+        
         component.disabled = function (disabled) {
             this.modifiers.disabled = disabled;
             return this;
         };
+        
         component.inline = function (inline) {
             this.modifiers.inline = inline;
             return this;
         };
+        
+        component.padding = function (direction, value) {
+            if (!this.modifiers.padding) this.modifiers.padding = {};
+            this.modifiers.padding[direction] = value;
+            return this;
+        };
+        
         return component;
     },
 
@@ -1114,14 +1257,23 @@ var GunBasic = {
             binding: binding,
             modifiers: {}
         };
+        
         component.checked = function (checked) {
             this.modifiers.checked = checked;
             return this;
         };
+        
         component.disabled = function (disabled) {
             this.modifiers.disabled = disabled;
             return this;
         };
+        
+        component.padding = function (direction, value) {
+            if (!this.modifiers.padding) this.modifiers.padding = {};
+            this.modifiers.padding[direction] = value;
+            return this;
+        };
+        
         return component;
     },
 
@@ -1132,18 +1284,28 @@ var GunBasic = {
             action: action,
             modifiers: {}
         };
+        
         component.style = function (style) {
             this.modifiers.style = style;
             return this;
         };
+        
         component.size = function (size) {
             this.modifiers.size = size;
             return this;
         };
+        
         component.icon = function (icon) {
             this.modifiers.icon = icon;
             return this;
         };
+        
+        component.padding = function (direction, value) {
+            if (!this.modifiers.padding) this.modifiers.padding = {};
+            this.modifiers.padding[direction] = value;
+            return this;
+        };
+        
         return component;
     },
 
@@ -1154,14 +1316,23 @@ var GunBasic = {
             items: items || [],
             modifiers: {}
         };
+        
         component.style = function (style) {
             this.modifiers.style = style;
             return this;
         };
+        
         component.size = function (size) {
             this.modifiers.size = size;
             return this;
         };
+        
+        component.padding = function (direction, value) {
+            if (!this.modifiers.padding) this.modifiers.padding = {};
+            this.modifiers.padding[direction] = value;
+            return this;
+        };
+        
         return component;
     },
 
@@ -1171,26 +1342,38 @@ var GunBasic = {
             content: content,
             modifiers: {}
         };
+        
         component.header = function (header) {
             this.header = header;
             return this;
         };
+        
         component.footer = function (footer) {
             this.footer = footer;
             return this;
         };
+        
         component.border = function (border) {
             this.modifiers.border = border;
             return this;
         };
+        
         component.textAlign = function (align) {
             this.modifiers.textAlign = align;
             return this;
         };
+        
         component.children = function (children) {
             this.children = children;
             return this;
         };
+        
+        component.padding = function (direction, value) {
+            if (!this.modifiers.padding) this.modifiers.padding = {};
+            this.modifiers.padding[direction] = value;
+            return this;
+        };
+        
         return component;
     },
 
@@ -1200,14 +1383,23 @@ var GunBasic = {
             content: content,
             modifiers: {}
         };
+        
         component.style = function (style) {
             this.modifiers.style = style;
             return this;
         };
+        
         component.dismissible = function (dismissible) {
             this.modifiers.dismissible = dismissible;
             return this;
         };
+        
+        component.padding = function (direction, value) {
+            if (!this.modifiers.padding) this.modifiers.padding = {};
+            this.modifiers.padding[direction] = value;
+            return this;
+        };
+        
         return component;
     },
 
@@ -1219,37 +1411,57 @@ var GunBasic = {
             content: content,
             modifiers: {}
         };
+        
         component.size = function (size) {
             this.modifiers.size = size;
             return this;
         };
+        
         component.centered = function (centered) {
             this.modifiers.centered = centered;
             return this;
         };
+        
         component.scrollable = function (scrollable) {
             this.modifiers.scrollable = scrollable;
             return this;
         };
+        
         component.actions = function (actions) {
             this.actions = actions;
             return this;
         };
+        
         component.children = function (children) {
             this.children = children;
             return this;
         };
+        
+        component.padding = function (direction, value) {
+            if (!this.modifiers.padding) this.modifiers.padding = {};
+            this.modifiers.padding[direction] = value;
+            return this;
+        };
+        
         return component;
     },
 
     createList: function (data, keyPath, itemBuilder) {
-        return {
+        var component = {
             componentType: 'List',
             data: data,
             keyPath: keyPath,
             itemBuilder: itemBuilder,
             modifiers: {}
         };
+        
+        component.padding = function (direction, value) {
+            if (!this.modifiers.padding) this.modifiers.padding = {};
+            this.modifiers.padding[direction] = value;
+            return this;
+        };
+        
+        return component;
     },
 
     createPagination: function (currentPage, totalPages, onPageChange) {
@@ -1260,26 +1472,37 @@ var GunBasic = {
             onPageChange: onPageChange,
             modifiers: {}
         };
+        
         component.size = function (size) {
             this.modifiers.size = size;
             return this;
         };
+        
         component.maxVisible = function (max) {
             this.modifiers.maxVisible = max;
             return this;
         };
+        
         component.showFirst = function (show) {
             this.modifiers.showFirst = show;
             return this;
         };
+        
         component.showLast = function (show) {
             this.modifiers.showLast = show;
             return this;
         };
+        
+        component.padding = function (direction, value) {
+            if (!this.modifiers.padding) this.modifiers.padding = {};
+            this.modifiers.padding[direction] = value;
+            return this;
+        };
+        
         return component;
     }
-
-}; // End of GunBasic object
+    
+ }; // End of GunBasic object
 
 // === GLOBAL API FUNCTIONS ===
 function loadTemplate(apiUrl, templateId, targetId, onComplete) {
@@ -1302,13 +1525,13 @@ function toggleElement(elementId) {
     return GunBasic.toggleElement(elementId);
 }
 
-// === GLOBAL UI COMPONENT CREATOR FUNCTIONS ===
-function VStack(children) {
-    return GunBasic.createVStack(children);
+// === ENHANCED GLOBAL UI COMPONENT CREATOR FUNCTIONS WITH SPACING ===
+function VStack(children, options) {
+    return GunBasic.createVStack(children, options);
 }
 
-function HStack(children) {
-    return GunBasic.createHStack(children);
+function HStack(children, options) {
+    return GunBasic.createHStack(children, options);
 }
 
 function Spacer() {
@@ -1394,5 +1617,93 @@ window.Alert = Alert;
 window.Modal = Modal;
 window.List = List;
 window.Pagination = Pagination;
+
+/* ========================================
+   USAGE EXAMPLES - SWIFTUI STYLE FEATURES
+   ======================================== */
+
+/*
+// ✨ NEW FEATURES IN YOUR UPDATED FRAMEWORK:
+
+// 🎯 Spacing between stack children:
+VStack([
+    Text("Item 1"),
+    Text("Item 2"), 
+    Text("Item 3")
+], {spacing: 3})  // Adds gap-3 class
+
+HStack([
+    Button("Left", "test"),
+    Button("Right", "test")
+], {spacing: 2})  // Adds gap-2 class
+
+// 🎯 Padding on individual components:
+Button("Click Me", "test")
+    .style("primary")
+    .padding("bottom", 2)      // Adds pb-2
+    .padding("horizontal", 3)  // Adds px-3
+
+Text("Hello World")
+    .font("title")
+    .padding("all", 2)         // Adds p-2
+    .padding("vertical", 1)    // Adds py-1
+
+TextField("Name", "name")
+    .placeholder("Enter name")
+    .padding("bottom", 2)      // Adds pb-2 to wrapper
+
+Badge("New")
+    .style("success")
+    .padding("horizontal", 2)  // Adds px-2
+
+// 🎯 All padding directions supported:
+.padding("all", 3)        // p-3
+.padding("top", 2)        // pt-2
+.padding("bottom", 2)     // pb-2
+.padding("left", 2)       // ps-2 (Bootstrap 5)
+.padding("right", 2)      // pe-2 (Bootstrap 5)
+.padding("leading", 2)    // ps-2 (SwiftUI style)
+.padding("trailing", 2)   // pe-2 (SwiftUI style)
+.padding("horizontal", 2) // px-2
+.padding("vertical", 2)   // py-2
+
+// 🎯 Combined approaches for perfect layouts:
+VStack([
+    Text("User Form").font("title").padding("bottom", 2),
+    TextField("Name", "name").placeholder("Enter name").padding("bottom", 2),
+    TextField("Email", "email").type("email").padding("bottom", 2),
+    HStack([
+        Button("Cancel", "test").padding("right", 2),
+        Button("Submit", "test").style("primary")
+    ], {spacing: 2})
+], {spacing: 3}).padding("all", 4)
+
+// 🎯 Your button demo with proper spacing:
+VStack([
+    Button("Primary", "test").style("primary").padding("bottom", 2),
+    Button("Secondary", "test").style("secondary").padding("bottom", 2), 
+    Button("Success", "test").style("success")
+], {spacing: 2})
+
+// 🎯 Complex form with perfect spacing:
+Card().children([
+    VStack([
+        Text("Contact Form").font("title"),
+        TextField("Full Name", "name").required(true).padding("bottom", 1),
+        TextField("Email", "email").type("email").required(true).padding("bottom", 1),
+        TextArea("Message", "message").rows(4).padding("bottom", 2),
+        HStack([
+            Button("Cancel", "cancelForm").style("secondary"),
+            Button("Send Message", "submitForm").style("primary")
+        ], {spacing: 2})
+    ], {spacing: 2})
+]).padding("all", 3)
+
+*/   
+    
+    
+
+    
+
 
 

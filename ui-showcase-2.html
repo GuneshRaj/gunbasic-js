@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GunBasic Framework Demo - Padding & Spacing</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .demo-section {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            margin: 20px 0;
+            background: #f8f9fa;
+        }
+        .demo-title {
+            background: #495057;
+            color: white;
+            padding: 8px 16px;
+            margin: -2px -2px 16px -2px;
+            border-radius: 6px 6px 0 0;
+            font-weight: bold;
+        }
+        .code-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <header class="bg-primary text-white p-4 mb-4">
+            <h1 class="h2 mb-1">🚀 GunBasic Framework v3.6</h1>
+            <p class="mb-0">Enhanced with SwiftUI-Style Padding & Spacing</p>
+        </header>
+
+        <!-- Demo 1: Basic Spacing Between Components -->
+        <div class="demo-section p-4">
+            <div class="demo-title">Demo 1: VStack with Spacing</div>
+            <div class="code-example">
+VStack([
+    Button("Primary Button", "test").style("primary"),
+    Button("Secondary Button", "test").style("secondary"),
+    Button("Success Button", "test").style("success")
+], {spacing: 3})
+            </div>
+            <div id="demo1"></div>
+        </div>
+
+        <!-- Demo 2: Horizontal Layout with Spacing -->
+        <div class="demo-section p-4">
+            <div class="demo-title">Demo 2: HStack with Spacing & Justification</div>
+            <div class="code-example">
+HStack([
+    Button("Cancel", "test").style("secondary"),
+    Button("Save Draft", "test").style("outline"),
+    Button("Publish", "test").style("success")
+], {spacing: 2}).justify("end")
+            </div>
+            <div id="demo2"></div>
+        </div>
+
+        <!-- Demo 3: Individual Component Padding -->
+        <div class="demo-section p-4">
+            <div class="demo-title">Demo 3: Individual Component Padding</div>
+            <div class="code-example">
+VStack([
+    Text("User Registration").font("title").padding("bottom", 3),
+    Badge("Required Fields").style("warning").padding("bottom", 2),
+    TextField("Full Name", "name").required(true).padding("bottom", 2),
+    TextField("Email Address", "email").type("email").padding("bottom", 2),
+    Button("Create Account", "test").style("primary").padding("top", 2)
+], {spacing: 1})
+            </div>
+            <div id="demo3"></div>
+        </div>
+
+        <!-- Demo 4: Complex Form Layout -->
+        <div class="demo-section p-4">
+            <div class="demo-title">Demo 4: Complex Form with Cards & Padding</div>
+            <div class="code-example">
+Card().children([
+    VStack([
+        Text("Contact Information").font("headline").padding("bottom", 2),
+        HStack([
+            TextField("First Name", "fname").padding("right", 1),
+            TextField("Last Name", "lname")
+        ], {spacing: 2}),
+        TextField("Email", "email").type("email").padding("vertical", 1),
+        TextArea("Message", "message").rows(3).padding("bottom", 2),
+        Alert("All fields marked with * are required").style("info").padding("bottom", 2),
+        HStack([
+            Button("Clear Form", "test").style("secondary"),
+            Button("Send Message", "test").style("primary")
+        ], {spacing: 2}).justify("end")
+    ], {spacing: 2})
+]).padding("all", 3).border("primary")
+            </div>
+            <div id="demo4"></div>
+        </div>
+
+        <!-- Demo 5: Dashboard Layout -->
+        <div class="demo-section p-4">
+            <div class="demo-title">Demo 5: Dashboard with Mixed Components</div>
+            <div class="code-example">
+VStack([
+    HStack([
+        Text("Dashboard Overview").font("title"),
+        Badge("Live").style("success").pill(true)
+    ], {spacing: 2}).justify("between").padding("bottom", 3),
+    
+    HStack([
+        Card("Total Users").children([
+            Text("1,234").font("headline"),
+            Text("+12%").color("muted")
+        ]).padding("all", 2).textAlign("center"),
+        
+        Card("Revenue").children([
+            Text("$45,678").font("headline"),
+            Text("+8%").color("muted")
+        ]).padding("all", 2).textAlign("center"),
+        
+        Card("Orders").children([
+            Text("567").font("headline"),
+            Text("+23%").color("muted")
+        ]).padding("all", 2).textAlign("center")
+    ], {spacing: 3}),
+    
+    Alert("System maintenance scheduled for tonight").style("warning").padding("top", 3)
+], {spacing: 2})
+            </div>
+            <div id="demo5"></div>
+        </div>
+
+        <!-- Demo 6: Form Controls Showcase -->
+        <div class="demo-section p-4">
+            <div class="demo-title">Demo 6: All Form Controls with Padding</div>
+            <div class="code-example">
+VStack([
+    Text("Preferences").font("title").padding("bottom", 2),
+    
+    RadioGroup("Theme", "theme", [
+        {value: "light", label: "Light Mode"},
+        {value: "dark", label: "Dark Mode"},
+        {value: "auto", label: "Auto"}
+    ]).value("light").padding("bottom", 2),
+    
+    Select("Language", "lang", [
+        "English", "Spanish", "French", "German"
+    ]).placeholder("Choose language").padding("bottom", 2),
+    
+    HStack([
+        Checkbox("Email notifications", "email_notify").checked(true),
+        Toggle("SMS alerts", "sms_alerts").checked(false)
+    ], {spacing: 4}).padding("bottom", 2),
+    
+    DropdownMenu("More Actions", [
+        {label: "Export Data", action: "exportData"},
+        {label: "Import Settings", action: "importSettings"},
+        {divider: true},
+        {label: "Reset to Defaults", action: "resetDefaults"}
+    ]).style("outline").padding("top", 1)
+], {spacing: 2})
+            </div>
+            <div id="demo6"></div>
+        </div>
+
+        <!-- Demo 7: Nested Layouts -->
+        <div class="demo-section p-4">
+            <div class="demo-title">Demo 7: Nested Layouts with Spacing</div>
+            <div class="code-example">
+HStack([
+    Card("Sidebar").children([
+        VStack([
+            Button("Home", "test").style("outline").padding("bottom", 1),
+            Button("Profile", "test").style("outline").padding("bottom", 1),
+            Button("Settings", "test").style("outline")
+        ], {spacing: 1})
+    ]).padding("all", 2),
+    
+    Card("Main Content").children([
+        VStack([
+            Text("Welcome Back!").font("title").padding("bottom", 2),
+            Text("Here's what's happening in your account today.").padding("bottom", 3),
+            HStack([
+                Badge("3 New").style("primary"),
+                Badge("5 Pending").style("warning"),
+                Badge("12 Complete").style("success")
+            ], {spacing: 2}).padding("bottom", 2),
+            Button("View All Activities", "test").style("primary")
+        ], {spacing: 1})
+    ]).padding("all", 3)
+], {spacing: 3})
+            </div>
+            <div id="demo7"></div>
+        </div>
+
+        <!-- Pagination Demo -->
+        <div class="demo-section p-4">
+            <div class="demo-title">Demo 8: Pagination with Padding</div>
+            <div class="code-example">
+VStack([
+    Text("Search Results: 847 items").padding("bottom", 2),
+    List([
+        {name: "Item 1", status: "Active"},
+        {name: "Item 2", status: "Pending"},
+        {name: "Item 3", status: "Complete"}
+    ], "name", function(item) {
+        return HStack([
+            Text(item.name),
+            Badge(item.status).style(item.status === "Active" ? "success" : "warning")
+        ], {spacing: 2}).justify("between");
+    }).padding("bottom", 2),
+    Pagination(2, 10, "changePage").padding("top", 2)
+], {spacing: 1})
+            </div>
+            <div id="demo8"></div>
+        </div>
+    </div>
+
+    <script>
+        // Include your complete GunBasic framework here (all 8 parts combined)
+        // For demo purposes, I'm including a simplified version that shows the structure
+        
+        // Mock GunBasic object for demonstration
+        var GunBasic = {
+            processUI: function(code, data) {
+                try {
+                    // This would be your actual processUI implementation
+                    var func = new Function('VStack', 'HStack', 'Text', 'Button', 'TextField', 'TextArea', 'Card', 'Badge', 'Alert', 'RadioGroup', 'Select', 'Checkbox', 'Toggle', 'DropdownMenu', 'List', 'Pagination', 'return ' + code);
+                    var component = func(VStack, HStack, Text, Button, TextField, TextArea, Card, Badge, Alert, RadioGroup, Select, Checkbox, Toggle, DropdownMenu, List, Pagination);
+                    return this.renderUIComponent(component);
+                } catch(e) {
+                    return '<div class="alert alert-danger">Error: ' + e.message + '</div>';
+                }
+            },
+            
+            renderUIComponent: function(component) {
+                // Simplified renderer for demo
+                if (!component) return '';
+                if (Array.isArray(component)) {
+                    return component.map(c => this.renderUIComponent(c)).join('');
+                }
+                
+                var classes = [];
+                var spacing = component.spacing ? 'gap-' + component.spacing : '';
+                var padding = '';
+                
+                if (component.modifiers && component.modifiers.padding) {
+                    var paddingClasses = [];
+                    for (var dir in component.modifiers.padding) {
+                        var val = component.modifiers.padding[dir];
+                        if (dir === 'all') paddingClasses.push('p-' + val);
+                        else if (dir === 'top') paddingClasses.push('pt-' + val);
+                        else if (dir === 'bottom') paddingClasses.push('pb-' + val);
+                        else if (dir === 'left') paddingClasses.push('ps-' + val);
+                        else if (dir === 'right') paddingClasses.push('pe-' + val);
+                        else if (dir === 'horizontal') paddingClasses.push('px-' + val);
+                        else if (dir === 'vertical') paddingClasses.push('py-' + val);
+                    }
+                    padding = paddingClasses.join(' ');
+                }
+                
+                switch(component.componentType) {
+                    case 'VStack':
+                        classes = ['d-flex', 'flex-column', spacing, padding].filter(Boolean);
+                        var children = component.children ? component.children.map(c => this.renderUIComponent(c)).join('') : '';
+                        return '<div class="' + classes.join(' ') + '">' + children + '</div>';
+                        
+                    case 'HStack':
+                        classes = ['d-flex', 'flex-row', spacing, padding].filter(Boolean);
+                        if (component.modifiers && component.modifiers.justify) {
+                            if (component.modifiers.justify === 'end') classes.push('justify-content-end');
+                            else if (component.modifiers.justify === 'center') classes.push('justify-content-center');
+                            else if (component.modifiers.justify === 'between') classes.push('justify-content-between');
+                        }
+                        var children = component.children ? component.children.map(c => this.renderUIComponent(c)).join('') : '';
+                        return '<div class="' + classes.join(' ') + '">' + children + '</div>';
+                        
+                    case 'Text':
+                        var tag = 'p';
+                        classes = [padding].filter(Boolean);
+                        if (component.modifiers) {
+                            if (component.modifiers.font === 'title') { tag = 'h2'; classes.push('fw-bold'); }
+                            else if (component.modifiers.font === 'headline') tag = 'h4';
+                            if (component.modifiers.color === 'muted') classes.push('text-muted');
+                        }
+                        var classAttr = classes.length > 0 ? ' class="' + classes.join(' ') + '"' : '';
+                        return '<' + tag + classAttr + '>' + (component.content || '') + '</' + tag + '>';
+                        
+                    case 'Button':
+                        var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'primary';
+                        classes = ['btn', 'btn-' + style, padding].filter(Boolean);
+                        return '<button class="' + classes.join(' ') + '">' + (component.label || '') + '</button>';
+                        
+                    case 'TextField':
+                        var wrapperClasses = ['mb-3', padding].filter(Boolean);
+                        var required = component.modifiers && component.modifiers.required;
+                        var placeholder = component.modifiers && component.modifiers.placeholder ? ' placeholder="' + component.modifiers.placeholder + '"' : '';
+                        var type = component.modifiers && component.modifiers.type ? component.modifiers.type : 'text';
+                        if (component.label) {
+                            return '<div class="' + wrapperClasses.join(' ') + '"><label class="form-label">' + component.label + (required ? ' <span class="text-danger">*</span>' : '') + '</label><input class="form-control" type="' + type + '"' + placeholder + '></div>';
+                        }
+                        return '<input class="form-control ' + padding + '" type="' + type + '"' + placeholder + '>';
+                        
+                    case 'TextArea':
+                        var wrapperClasses = ['mb-3', padding].filter(Boolean);
+                        var rows = component.modifiers && component.modifiers.rows ? component.modifiers.rows : 3;
+                        var placeholder = component.modifiers && component.modifiers.placeholder ? ' placeholder="' + component.modifiers.placeholder + '"' : '';
+                        if (component.label) {
+                            return '<div class="' + wrapperClasses.join(' ') + '"><label class="form-label">' + component.label + '</label><textarea class="form-control" rows="' + rows + '"' + placeholder + '></textarea></div>';
+                        }
+                        return '<textarea class="form-control ' + padding + '" rows="' + rows + '"' + placeholder + '></textarea>';
+                        
+                    case 'Badge':
+                        var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'primary';
+                        var pill = component.modifiers && component.modifiers.pill ? ' rounded-pill' : '';
+                        classes = ['badge', 'bg-' + style, padding].filter(Boolean);
+                        return '<span class="' + classes.join(' ') + pill + '">' + (component.content || '') + '</span>';
+                        
+                    case 'Card':
+                        classes = ['card', padding].filter(Boolean);
+                        var border = component.modifiers && component.modifiers.border ? ' border-' + component.modifiers.border : '';
+                        var textAlign = component.modifiers && component.modifiers.textAlign ? ' text-' + component.modifiers.textAlign : '';
+                        var children = component.children ? component.children.map(c => this.renderUIComponent(c)).join('') : '';
+                        var body = children ? '<div class="card-body">' + children + '</div>' : '<div class="card-body">' + (component.content || '') + '</div>';
+                        return '<div class="' + classes.join(' ') + border + textAlign + '">' + body + '</div>';
+                        
+                    case 'Alert':
+                        var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'info';
+                        classes = ['alert', 'alert-' + style, padding].filter(Boolean);
+                        return '<div class="' + classes.join(' ') + '">' + (component.content || '') + '</div>';
+                        
+                    case 'RadioGroup':
+                        var wrapperClasses = ['mb-3', padding].filter(Boolean);
+                        var options = component.options || [];
+                        var radioItems = options.map((opt, i) => {
+                            var value = typeof opt === 'object' ? opt.value : opt;
+                            var label = typeof opt === 'object' ? opt.label : opt;
+                            var checked = component.modifiers && component.modifiers.value === value ? ' checked' : '';
+                            return '<div class="form-check"><input class="form-check-input" type="radio" name="' + component.binding + '" value="' + value + '"' + checked + '><label class="form-check-label">' + label + '</label></div>';
+                        }).join('');
+                        return '<div class="' + wrapperClasses.join(' ') + '"><label class="form-label">' + component.label + '</label>' + radioItems + '</div>';
+                        
+                    case 'Select':
+                        var wrapperClasses = ['mb-3', padding].filter(Boolean);
+                        var options = component.options || [];
+                        var placeholder = component.modifiers && component.modifiers.placeholder ? '<option disabled selected>' + component.modifiers.placeholder + '</option>' : '';
+                        var optionItems = options.map(opt => {
+                            var value = typeof opt === 'object' ? opt.value : opt;
+                            var label = typeof opt === 'object' ? opt.label : opt;
+                            return '<option value="' + value + '">' + label + '</option>';
+                        }).join('');
+                        return '<div class="' + wrapperClasses.join(' ') + '"><label class="form-label">' + component.label + '</label><select class="form-select">' + placeholder + optionItems + '</select></div>';
+                        
+                    case 'Checkbox':
+                        classes = ['form-check', padding].filter(Boolean);
+                        var checked = component.modifiers && component.modifiers.checked ? ' checked' : '';
+                        return '<div class="' + classes.join(' ') + '"><input class="form-check-input" type="checkbox"' + checked + '><label class="form-check-label">' + component.label + '</label></div>';
+                        
+                    case 'Toggle':
+                        classes = ['form-check', 'form-switch', padding].filter(Boolean);
+                        var checked = component.modifiers && component.modifiers.checked ? ' checked' : '';
+                        return '<div class="' + classes.join(' ') + '"><input class="form-check-input" type="checkbox" role="switch"' + checked + '><label class="form-check-label">' + component.label + '</label></div>';
+                        
+                    case 'DropdownMenu':
+                        var style = component.modifiers && component.modifiers.style ? component.modifiers.style : 'primary';
+                        var items = component.items || [];
+                        var menuItems = items.map(item => {
+                            if (item.divider) return '<li><hr class="dropdown-divider"></li>';
+                            if (item.header) return '<li><h6 class="dropdown-header">' + item.header + '</h6></li>';
+                            return '<li><a class="dropdown-item" href="#">' + item.label + '</a></li>';
+                        }).join('');
+                        classes = ['btn', 'btn-' + style, 'dropdown-toggle', padding].filter(Boolean);
+                        return '<div class="dropdown"><button class="' + classes.join(' ') + '" data-bs-toggle="dropdown">' + component.label + '</button><ul class="dropdown-menu">' + menuItems + '</ul></div>';
+                        
+                    case 'List':
+                        var listItems = (component.data || []).map(item => {
+                            var itemComponent = component.itemBuilder ? component.itemBuilder(item) : {componentType: 'Text', content: JSON.stringify(item)};
+                            return '<div class="list-group-item border-0">' + this.renderUIComponent(itemComponent) + '</div>';
+                        }).join('');
+                        classes = ['list-group', 'list-group-flush', padding].filter(Boolean);
+                        return '<div class="' + classes.join(' ') + '">' + listItems + '</div>';
+                        
+                    case 'Pagination':
+                        var current = component.currentPage || 1;
+                        var total = component.totalPages || 1;
+                        var items = [];
+                        items.push('<li class="page-item"><a class="page-link" href="#">Previous</a></li>');
+                        for (var i = 1; i <= total; i++) {
+                            var active = i === current ? ' active' : '';
+                            items.push('<li class="page-item' + active + '"><a class="page-link" href="#">' + i + '</a></li>');
+                        }
+                        items.push('<li class="page-item"><a class="page-link" href="#">Next</a></li>');
+                        classes = ['pagination', padding].filter(Boolean);
+                        return '<nav><ul class="' + classes.join(' ') + '">' + items.join('') + '</ul></nav>';
+                        
+                    default:
+                        return '<div>Unknown component</div>';
+                }
+            }
+        };
+        
+        // Component creator functions
+        function VStack(children, options) {
+            return {
+                componentType: 'VStack',
+                children: children,
+                spacing: options && options.spacing ? options.spacing : null,
+                modifiers: {},
+                justify: function(alignment) { this.modifiers.justify = alignment; return this; },
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function HStack(children, options) {
+            return {
+                componentType: 'HStack',
+                children: children,
+                spacing: options && options.spacing ? options.spacing : null,
+                modifiers: {},
+                justify: function(alignment) { this.modifiers.justify = alignment; return this; },
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function Text(content) {
+            return {
+                componentType: 'Text',
+                content: content,
+                modifiers: {},
+                font: function(size) { this.modifiers.font = size; return this; },
+                color: function(color) { this.modifiers.color = color; return this; },
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function Button(label, action) {
+            return {
+                componentType: 'Button',
+                label: label,
+                action: action,
+                modifiers: {},
+                style: function(style) { this.modifiers.style = style; return this; },
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function TextField(label, binding) {
+            return {
+                componentType: 'TextField',
+                label: label,
+                binding: binding,
+                modifiers: {},
+                required: function(req) { this.modifiers.required = req; return this; },
+                placeholder: function(text) { this.modifiers.placeholder = text; return this; },
+                type: function(type) { this.modifiers.type = type; return this; },
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function TextArea(label, binding) {
+            return {
+                componentType: 'TextArea',
+                label: label,
+                binding: binding,
+                modifiers: {},
+                rows: function(rows) { this.modifiers.rows = rows; return this; },
+                placeholder: function(text) { this.modifiers.placeholder = text; return this; },
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function Badge(content) {
+            return {
+                componentType: 'Badge',
+                content: content,
+                modifiers: {},
+                style: function(style) { this.modifiers.style = style; return this; },
+                pill: function(pill) { this.modifiers.pill = pill; return this; },
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function Card(content) {
+            return {
+                componentType: 'Card',
+                content: content,
+                modifiers: {},
+                border: function(border) { this.modifiers.border = border; return this; },
+                textAlign: function(align) { this.modifiers.textAlign = align; return this; },
+                children: function(children) { this.children = children; return this; },
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function Alert(content) {
+            return {
+                componentType: 'Alert',
+                content: content,
+                modifiers: {},
+                style: function(style) { this.modifiers.style = style; return this; },
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function RadioGroup(label, binding, options) {
+            return {
+                componentType: 'RadioGroup',
+                label: label,
+                binding: binding,
+                options: options,
+                modifiers: {},
+                value: function(value) { this.modifiers.value = value; return this; },
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function Select(label, binding, options) {
+            return {
+                componentType: 'Select',
+                label: label,
+                binding: binding,
+                options: options,
+                modifiers: {},
+                placeholder: function(text) { this.modifiers.placeholder = text; return this; },
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function Checkbox(label, binding) {
+            return {
+                componentType: 'Checkbox',
+                label: label,
+                binding: binding,
+                modifiers: {},
+                checked: function(checked) { this.modifiers.checked = checked; return this; },
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function Toggle(label, binding) {
+            return {
+                componentType: 'Toggle',
+                label: label,
+                binding: binding,
+                modifiers: {},
+                checked: function(checked) { this.modifiers.checked = checked; return this; },
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function DropdownMenu(label, items) {
+            return {
+                componentType: 'DropdownMenu',
+                label: label,
+                items: items,
+                modifiers: {},
+                style: function(style) { this.modifiers.style = style; return this; },
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function List(data, keyPath, itemBuilder) {
+            return {
+                componentType: 'List',
+                data: data,
+                keyPath: keyPath,
+                itemBuilder: itemBuilder,
+                modifiers: {},
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        function Pagination(current, total, onChange) {
+            return {
+                componentType: 'Pagination',
+                currentPage: current,
+                totalPages: total,
+                onPageChange: onChange,
+                modifiers: {},
+                padding: function(direction, value) { 
+                    if (!this.modifiers.padding) this.modifiers.padding = {};
+                    this.modifiers.padding[direction] = value; 
+                    return this; 
+                }
+            };
+        }
+        
+        // Demo implementations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Demo 1: VStack with Spacing
+            var demo1Code = `
+VStack([
+    Button("Primary Button", "test").style("primary"),
+    Button("Secondary Button", "test").style("secondary"),
+    Button("Success Button", "test").style("success")
+], {spacing: 3})
+            `;
+            document.getElementById('demo1').innerHTML = GunBasic.processUI(demo1Code.trim());
+            
+            // Demo 2: HStack with Spacing & Justification
+            var demo2Code = `
+HStack([
+    Button("Cancel", "test").style("secondary"),
+    Button("Save Draft", "test").style("outline"),
+    Button("Publish", "test").style("success")
+], {spacing: 2}).justify("end")
+            `;
+            document.getElementById('demo2').innerHTML = GunBasic.processUI(demo2Code.trim());
+            
+            // Demo 3: Individual Component Padding
+            var demo3Code = `
+VStack([
+    Text("User Registration").font("title").padding("bottom", 3),
+    Badge("Required Fields").style("warning").padding("bottom", 2),
+    TextField("Full Name", "name").required(true).padding("bottom", 2),
+    TextField("Email Address", "email").type("email").padding("bottom", 2),
+    Button("Create Account", "test").style("primary").padding("top", 2)
+], {spacing: 1})
+            `;
+            document.getElementById('demo3').innerHTML = GunBasic.processUI(demo3Code.trim());
+            
+            // Demo 4: Complex Form Layout
+            var demo4Code = `
+Card().children([
+    VStack([
+        Text("Contact Information").font("headline").padding("bottom", 2),
+        HStack([
+            TextField("First Name", "fname").padding("right", 1),
+            TextField("Last Name", "lname")
+        ], {spacing: 2}),
+        TextField("Email", "email").type("email").padding("vertical", 1),
+        TextArea("Message", "message").rows(3).padding("bottom", 2),
+        Alert("All fields marked with * are required").style("info").padding("bottom", 2),
+        HStack([
+            Button("Clear Form", "test").style("secondary"),
+            Button("Send Message", "test").style("primary")
+        ], {spacing: 2}).justify("end")
+    ], {spacing: 2})
+]).padding("all", 3).border("primary")
+            `;
+            document.getElementById('demo4').innerHTML = GunBasic.processUI(demo4Code.trim());
+            
+            // Demo 5: Dashboard Layout
+            var demo5Code = `
+VStack([
+    HStack([
+        Text("Dashboard Overview").font("title"),
+        Badge("Live").style("success").pill(true)
+    ], {spacing: 2}).justify("between").padding("bottom", 3),
+    
+    HStack([
+        Card("Total Users").children([
+            Text("1,234").font("headline"),
+            Text("+12%").color("muted")
+        ]).padding("all", 2).textAlign("center"),
+        
+        Card("Revenue").children([
+            Text("$45,678").font("headline"),
+            Text("+8%").color("muted")
+        ]).padding("all", 2).textAlign("center"),
+        
+        Card("Orders").children([
+            Text("567").font("headline"),
+            Text("+23%").color("muted")
+        ]).padding("all", 2).textAlign("center")
+    ], {spacing: 3}),
+    
+    Alert("System maintenance scheduled for tonight").style("warning").padding("top", 3)
+], {spacing: 2})
+            `;
+            document.getElementById('demo5').innerHTML = GunBasic.processUI(demo5Code.trim());
+            
+            // Demo 6: Form Controls Showcase
+            var demo6Code = `
+VStack([
+    Text("Preferences").font("title").padding("bottom", 2),
+    
+    RadioGroup("Theme", "theme", [
+        {value: "light", label: "Light Mode"},
+        {value: "dark", label: "Dark Mode"},
+        {value: "auto", label: "Auto"}
+    ]).value("light").padding("bottom", 2),
+    
+    Select("Language", "lang", [
+        "English", "Spanish", "French", "German"
+    ]).placeholder("Choose language").padding("bottom", 2),
+    
+    HStack([
+        Checkbox("Email notifications", "email_notify").checked(true),
+        Toggle("SMS alerts", "sms_alerts").checked(false)
+    ], {spacing: 4}).padding("bottom", 2),
+    
+    DropdownMenu("More Actions", [
+        {label: "Export Data", action: "exportData"},
+        {label: "Import Settings", action: "importSettings"},
+        {divider: true},
+        {label: "Reset to Defaults", action: "resetDefaults"}
+    ]).style("outline").padding("top", 1)
+], {spacing: 2})
+            `;
+            document.getElementById('demo6').innerHTML = GunBasic.processUI(demo6Code.trim());
+            
+            // Demo 7: Nested Layouts
+            var demo7Code = `
+HStack([
+    Card("Sidebar").children([
+        VStack([
+            Button("Home", "test").style("outline").padding("bottom", 1),
+            Button("Profile", "test").style("outline").padding("bottom", 1),
+            Button("Settings", "test").style("outline")
+        ], {spacing: 1})
+    ]).padding("all", 2),
+    
+    Card("Main Content").children([
+        VStack([
+            Text("Welcome Back!").font("title").padding("bottom", 2),
+            Text("Here's what's happening in your account today.").padding("bottom", 3),
+            HStack([
+                Badge("3 New").style("primary"),
+                Badge("5 Pending").style("warning"),
+                Badge("12 Complete").style("success")
+            ], {spacing: 2}).padding("bottom", 2),
+            Button("View All Activities", "test").style("primary")
+        ], {spacing: 1})
+    ]).padding("all", 3)
+], {spacing: 3})
+            `;
+            document.getElementById('demo7').innerHTML = GunBasic.processUI(demo7Code.trim());
+            
+            // Demo 8: Pagination with Padding
+            var demo8Code = `
+VStack([
+    Text("Search Results: 847 items").padding("bottom", 2),
+    List([
+        {name: "Item 1", status: "Active"},
+        {name: "Item 2", status: "Pending"},
+        {name: "Item 3", status: "Complete"}
+    ], "name", function(item) {
+        return HStack([
+            Text(item.name),
+            Badge(item.status).style(item.status === "Active" ? "success" : "warning")
+        ], {spacing: 2}).justify("between");
+    }).padding("bottom", 2),
+    Pagination(2, 10, "changePage").padding("top", 2)
+], {spacing: 1})
+            `;
+            document.getElementById('demo8').innerHTML = GunBasic.processUI(demo8Code.trim());
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
